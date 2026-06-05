@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TypeMaster: Idle Typing Empire</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Inter:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+/* =========================================================
+   TypeMaster CSS — expanded readable version.
+   Bagian ini sengaja tidak dikompres: tema dark elegant,
+   scanline CRT, particle background, navbar, cards, arena,
+   keyboard virtual, toko, statistik, modal, toast, responsive.
+   ========================================================= */
+
+    :root{
+
+      --bg-primary:#080B14;
+--bg-secondary:#0D1117;
+--bg-card:#111827;
+--accent-gold:#D4AF37;
+--accent-gold-light:#F0D060;
+--accent-cyan:#00D4FF;
+--accent-purple:#8B5CF6;
+--accent-green:#10B981;
+--accent-red:#EF4444;
+--text-primary:#F9FAFB;
+--text-secondary:#9CA3AF;
+--text-muted:#4B5563;
+--border:#1F2937;
+--border-glow:rgba(212,175,55,.3);
+--glow-cyan:rgba(0,212,255,.2);
+--card-shadow:0 18px 50px rgba(0,0,0,.42);
+--radius:18px;
+--nav-h:76px
+    }
+
+    *{
+box-sizing:border-box}
+ html{
+scroll-behavior:smooth}
+ body{
+margin:0;
+min-height:100vh;
+background:radial-gradient(circle at top left,rgba(0,212,255,.09),transparent 32%),radial-gradient(circle at top right,rgba(212,175,55,.08),transparent 35%),var(--bg-primary);
+color:var(--text-primary);
+font-family:Inter,system-ui,sans-serif;
+overflow-x:hidden}
+
+    body::before{
+content:"";
+position:fixed;
+inset:0;
+z-index:-3;
+background:linear-gradient(rgba(255,255,255,.021) 50%,transparent 50%);
+background-size:100% 4px;
+pointer-events:none;
+mix-blend-mode:screen;
+opacity:.22}
+ body::after{
+content:"";
+position:fixed;
+inset:0;
+z-index:-4;
+background-image:radial-gradient(circle,#fff 1px,transparent 1.4px),radial-gradient(circle,var(--accent-cyan) 1px,transparent 1.4px),radial-gradient(circle,var(--accent-gold) 1px,transparent 1.4px);
+background-size:190px 190px,270px 270px,350px 350px;
+background-position:0 0,70px 90px,140px 50px;
+animation:stars 55s linear infinite;
+opacity:.24}
+@keyframes stars{
+to{
+background-position:900px 500px,700px 650px,1000px 700px}
+}
+
+    .hidden{
+display:none!important}
+.muted{
+color:var(--text-secondary)}
+.gold{
+color:var(--accent-gold)}
+.cyan{
+color:var(--accent-cyan)}
+.green{
+color:var(--accent-green)}
+.red{
+color:var(--accent-red)}
+
+    button,input,select,textarea{
+font:inherit}
+ button{
+border:0;
+cursor:pointer;
+color:var(--text-primary)}
+
+    .btn{
+position:relative;
+overflow:hidden;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+padding:10px 15px;
+border:1px solid var(--border);
+border-radius:14px;
+background:linear-gradient(180deg,#192234,#0e1522);
+box-shadow:inset 0 1px 0 rgba(255,255,255,.05);
+transition:.2s}
+.btn:hover{
+transform:translateY(-1px);
+border-color:var(--border-glow);
+box-shadow:0 0 24px var(--border-glow)}
+.btn.primary{
+background:linear-gradient(135deg,var(--accent-gold),#8b6a16);
+color:#111;
+font-weight:900}
+.btn.cyan{
+background:linear-gradient(135deg,var(--accent-cyan),#0369a1);
+font-weight:800}
+.btn.green{
+background:linear-gradient(135deg,var(--accent-green),#065f46);
+font-weight:800}
+.btn.red{
+background:linear-gradient(135deg,var(--accent-red),#7f1d1d);
+font-weight:800}
+.btn.small{
+padding:7px 10px;
+border-radius:11px;
+font-size:13px}
+.btn:disabled{
+opacity:.45;
+cursor:not-allowed;
+filter:grayscale(.4)}
+.ripple{
+position:absolute;
+border-radius:999px;
+background:rgba(255,255,255,.35);
+transform:scale(0);
+animation:ripple .55s ease-out;
+pointer-events:none}
+@keyframes ripple{
+to{
+transform:scale(4);
+opacity:0}
+}
+
+    #loading-screen{
+position:fixed;
+inset:0;
+background:var(--bg-primary);
+z-index:9999;
+display:grid;
+place-items:center;
+transition:.45s}
+.loader{
+text-align:center}
+.loader-logo{
+font-family:"Cinzel Decorative";
+font-size:44px;
+color:var(--accent-gold);
+text-shadow:0 0 28px var(--border-glow);
+animation:pulse 1.5s infinite}
+.loader-bar{
+width:320px;
+height:9px;
+background:#101827;
+border:1px solid var(--border);
+border-radius:999px;
+overflow:hidden;
+margin-top:22px}
+.loader-bar span{
+display:block;
+height:100%;
+width:45%;
+background:linear-gradient(90deg,transparent,var(--accent-cyan),var(--accent-gold),transparent);
+animation:load 1.1s infinite}
+@keyframes load{
+from{
+transform:translateX(-120%)}
+to{
+transform:translateX(230%)}
+}
+@keyframes pulse{
+50%{
+filter:brightness(1.5);
+transform:scale(1.02)}
+}
+
+    .app{
+min-height:100vh}
+.navbar{
+height:var(--nav-h);
+position:sticky;
+top:0;
+z-index:50;
+background:rgba(8,11,20,.84);
+backdrop-filter:blur(18px);
+display:grid;
+grid-template-columns:280px 1fr 330px;
+align-items:center;
+padding:0 22px;
+border-bottom:1px solid var(--border)}
+.brand{
+display:flex;
+align-items:center;
+gap:12px}
+.brand-title{
+font-family:"Cinzel Decorative";
+letter-spacing:1px;
+color:var(--accent-gold);
+text-shadow:0 0 22px var(--border-glow);
+font-size:22px;
+animation:brandglow 3s infinite}
+.brand-sub{
+font-family:Rajdhani;
+color:var(--text-secondary);
+font-size:12px;
+margin-top:2px}
+@keyframes brandglow{
+50%{
+text-shadow:0 0 35px rgba(240,208,96,.65)}
+}
+.nav-menu{
+display:flex;
+gap:8px;
+justify-content:center;
+flex-wrap:wrap}
+.nav-btn{
+background:transparent;
+border:1px solid transparent;
+color:var(--text-secondary);
+border-radius:13px;
+padding:10px 12px;
+font-family:Rajdhani;
+font-weight:700;
+font-size:16px}
+.nav-btn:hover,.nav-btn.active{
+color:var(--text-primary);
+border-color:var(--border-glow);
+background:rgba(212,175,55,.08);
+box-shadow:0 0 22px rgba(212,175,55,.12)}
+.profile{
+display:flex;
+align-items:center;
+justify-content:flex-end;
+gap:10px}
+.avatar{
+width:42px;
+height:42px;
+border-radius:50%;
+display:grid;
+place-items:center;
+background:linear-gradient(135deg,var(--accent-purple),var(--accent-cyan));
+font-size:22px;
+border:2px solid rgba(255,255,255,.15)}
+.level-badge{
+font-family:Rajdhani;
+background:rgba(212,175,55,.14);
+border:1px solid var(--border-glow);
+border-radius:999px;
+padding:3px 9px;
+color:var(--accent-gold)}
+
+    .hero-stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:16px;
+padding:18px 22px}
+.stat-card,.panel,.shop-card,.achievement,.mission,.upgrade-card{
+background:linear-gradient(180deg,rgba(17,24,39,.95),rgba(13,17,23,.95));
+border:1px solid var(--border);
+border-radius:var(--radius);
+box-shadow:var(--card-shadow)}
+.stat-card{
+padding:17px;
+position:relative;
+overflow:hidden}
+.stat-card::after{
+content:"";
+position:absolute;
+inset:auto -30% -70% auto;
+width:180px;
+height:180px;
+background:radial-gradient(circle,var(--glow-cyan),transparent 70%)}
+.stat-top{
+display:flex;
+align-items:center;
+justify-content:space-between}
+.stat-icon{
+font-size:32px;
+filter:drop-shadow(0 0 12px var(--glow-cyan))}
+.stat-value{
+font-family:Rajdhani;
+font-size:34px;
+font-weight:800;
+margin-top:8px}
+.trend{
+font-size:12px;
+color:var(--accent-green)}
+
+    .layout{
+display:grid;
+grid-template-columns:260px minmax(0,1fr) 300px;
+gap:18px;
+padding:0 22px 86px}
+.sidebar,.rightbar{
+display:flex;
+flex-direction:column;
+gap:16px}
+.panel{
+padding:16px}
+.panel h3,.panel h2{
+margin:0 0 12px;
+font-family:Rajdhani;
+letter-spacing:.5px}
+.side-link{
+display:flex;
+justify-content:space-between;
+align-items:center;
+width:100%;
+margin:7px 0;
+padding:10px;
+border:1px solid transparent;
+background:rgba(255,255,255,.025);
+border-radius:12px;
+color:var(--text-secondary)}
+.side-link:hover,.side-link.active{
+border-color:var(--border-glow);
+color:var(--text-primary);
+background:rgba(212,175,55,.08)}
+.progress{
+height:12px;
+background:#070b13;
+border-radius:999px;
+overflow:hidden;
+border:1px solid var(--border)}
+.progress>span{
+display:block;
+height:100%;
+width:0;
+background:linear-gradient(90deg,var(--accent-cyan),var(--accent-purple),var(--accent-gold),var(--accent-cyan));
+background-size:220% 100%;
+animation:shimmer 2s linear infinite;
+border-radius:999px}
+@keyframes shimmer{
+to{
+background-position:220% 0}
+}
+
+    .main{
+min-width:0}
+.page{
+display:none;
+animation:fade .25s ease}
+.page.active{
+display:block}
+@keyframes fade{
+from{
+opacity:0;
+transform:translateY(6px)}
+to{
+opacity:1;
+transform:none}
+}
+.grid-2{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px}
+.grid-3{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:16px}
+.hero-panel{
+padding:24px;
+background:linear-gradient(130deg,rgba(17,24,39,.98),rgba(13,17,23,.97),rgba(139,92,246,.12));
+border:1px solid var(--border-glow);
+border-radius:24px;
+box-shadow:var(--card-shadow);
+position:relative;
+overflow:hidden}
+.hero-panel h1{
+font-family:"Cinzel Decorative";
+font-size:34px;
+margin:0 0 8px;
+color:var(--accent-gold)}
+.quick-actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:18px}
+.metric-list{
+display:grid;
+gap:10px}
+.metric{
+display:flex;
+justify-content:space-between;
+border-bottom:1px dashed var(--border);
+padding-bottom:8px}
+.leader-entry{
+display:grid;
+grid-template-columns:32px 1fr auto;
+gap:9px;
+align-items:center;
+padding:8px 0;
+border-bottom:1px solid rgba(255,255,255,.05)}
+
+    .typing-hud{
+display:grid;
+grid-template-columns:repeat(6,1fr);
+gap:10px;
+margin-bottom:14px}
+.hud-box{
+text-align:center;
+padding:12px;
+border-radius:15px;
+background:rgba(17,24,39,.85);
+border:1px solid var(--border)}
+.hud-val{
+font-family:Rajdhani;
+font-size:28px;
+font-weight:800}
+.mode-tabs{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-bottom:14px}
+.typing-area{
+padding:22px;
+border-radius:22px;
+background:#070b13;
+border:1px solid var(--border);
+min-height:200px;
+font-family:"JetBrains Mono",monospace;
+font-size:25px;
+line-height:1.75;
+outline:0}
+.typing-area .char{
+border-radius:4px;
+padding:0 1px}
+.typing-area .char.correct{
+color:#07110d;
+background:var(--accent-green)}
+.typing-area .char.wrong{
+color:#fff;
+background:var(--accent-red)}
+.typing-area .char.current{
+box-shadow:0 2px 0 var(--accent-gold);
+background:rgba(212,175,55,.14)}
+.typing-controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+align-items:center;
+margin:14px 0}
+.select,.text-input{
+background:#080d17;
+border:1px solid var(--border);
+border-radius:12px;
+color:var(--text-primary);
+padding:10px}
+.text-input{
+width:100%}
+.lives{
+letter-spacing:4px;
+color:var(--accent-red)}
+
+    .keyboard{
+position:fixed;
+left:50%;
+bottom:12px;
+transform:translateX(-50%);
+z-index:45;
+width:min(920px,calc(100vw - 28px));
+background:rgba(8,11,20,.9);
+backdrop-filter:blur(14px);
+border:1px solid var(--border);
+border-radius:18px;
+padding:12px;
+box-shadow:0 0 40px rgba(0,0,0,.45)}
+.kb-row{
+display:flex;
+gap:6px;
+justify-content:center;
+margin:5px 0}
+.key{
+min-width:42px;
+height:38px;
+border-radius:10px;
+border:1px solid #263244;
+background:linear-gradient(180deg,#162033,#0b111d);
+display:grid;
+place-items:center;
+font-family:"JetBrains Mono";
+font-size:13px;
+color:var(--text-secondary);
+transition:.08s}
+.key.space{
+width:260px}
+.key.active{
+transform:translateY(2px) scale(.96);
+background:var(--accent-cyan);
+color:#001016;
+box-shadow:0 0 22px var(--accent-cyan)}
+.key.next{
+border-color:var(--accent-gold);
+box-shadow:0 0 15px var(--border-glow)}
+.finger-l1{
+--finger:#ef4444}
+.finger-l2{
+--finger:#f97316}
+.finger-l3{
+--finger:#eab308}
+.finger-l4{
+--finger:#22c55e}
+.finger-l5{
+--finger:#14b8a6}
+.finger-r1{
+--finger:#06b6d4}
+.finger-r2{
+--finger:#3b82f6}
+.finger-r3{
+--finger:#8b5cf6}
+.finger-r4{
+--finger:#d946ef}
+.finger-r5{
+--finger:#ec4899}
+.key{
+box-shadow:inset 0 -2px 0 var(--finger,transparent)}
+
+    .shop-grid,.ach-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:14px}
+.shop-card,.upgrade-card,.achievement,.mission{
+padding:14px}
+.shop-card.owned,.achievement.unlocked{
+border-color:rgba(16,185,129,.55);
+box-shadow:0 0 20px rgba(16,185,129,.09)}
+.price{
+font-family:Rajdhani;
+font-weight:800;
+color:var(--accent-gold)}
+.skill-tree{
+display:grid;
+gap:16px;
+place-items:center;
+overflow:auto;
+padding:12px}
+.skill-row{
+display:flex;
+gap:14px;
+justify-content:center}
+.skill-node{
+padding:12px 15px;
+border:1px solid var(--border);
+border-radius:16px;
+background:#0b111d;
+text-align:center;
+min-width:130px}
+.skill-node.unlocked{
+border-color:var(--accent-purple);
+box-shadow:0 0 20px rgba(139,92,246,.2)}
+.chart-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:16px}
+.canvas-wrap{
+height:260px;
+position:relative}
+.heatmap{
+display:grid;
+grid-template-columns:repeat(14,1fr);
+gap:5px}
+.heat{
+height:24px;
+border-radius:6px;
+background:rgba(16,185,129,.25);
+font-size:10px;
+display:grid;
+place-items:center}
+.heat.hot{
+background:rgba(239,68,68,.7)}
+.footer{
+position:fixed;
+left:0;
+right:0;
+bottom:0;
+z-index:44;
+background:rgba(8,11,20,.88);
+backdrop-filter:blur(12px);
+border-top:1px solid var(--border);
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:12px;
+padding:9px 22px;
+font-size:13px}
+.toast-container{
+position:fixed;
+right:18px;
+bottom:92px;
+z-index:200;
+display:grid;
+gap:10px}
+.toast{
+min-width:250px;
+max-width:360px;
+padding:13px 14px;
+border-radius:15px;
+background:rgba(17,24,39,.97);
+border:1px solid var(--border-glow);
+box-shadow:0 18px 40px rgba(0,0,0,.45);
+animation:toastIn .25s}
+.toast.success{
+border-color:rgba(16,185,129,.55)}
+.toast.error{
+border-color:rgba(239,68,68,.55)}
+@keyframes toastIn{
+from{
+opacity:0;
+transform:translateX(40px)}
+to{
+opacity:1;
+transform:none}
+}
+
+    .modal-backdrop{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.65);
+z-index:150;
+display:grid;
+place-items:center;
+padding:18px}
+.modal{
+width:min(850px,96vw);
+max-height:88vh;
+overflow:auto;
+background:linear-gradient(180deg,#111827,#0D1117);
+border:1px solid var(--border-glow);
+border-radius:24px;
+box-shadow:0 30px 80px rgba(0,0,0,.6);
+padding:20px}
+.modal-head{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:12px}
+.tabs{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-bottom:12px}
+.tab-content{
+display:none}
+.tab-content.active{
+display:block}
+.setting-row{
+display:grid;
+grid-template-columns:220px 1fr;
+gap:14px;
+align-items:center;
+margin:10px 0;
+padding:9px;
+border-bottom:1px dashed var(--border)}
+.range{
+width:100%}
+.toggle{
+width:48px;
+height:26px;
+border-radius:999px;
+background:#374151;
+position:relative;
+border:1px solid var(--border)}
+.toggle::after{
+content:"";
+width:20px;
+height:20px;
+border-radius:50%;
+background:#fff;
+position:absolute;
+top:2px;
+left:3px;
+transition:.2s}
+.toggle.on{
+background:var(--accent-green)}
+.toggle.on::after{
+left:23px}
+.finger-map{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:14px}
+.hand{
+padding:14px;
+background:#080d17;
+border:1px solid var(--border);
+border-radius:16px}
+.hand-row{
+display:flex;
+justify-content:space-between;
+margin:8px 0}
+.badge{
+display:inline-flex;
+align-items:center;
+gap:5px;
+padding:4px 8px;
+border-radius:999px;
+background:rgba(0,212,255,.1);
+border:1px solid rgba(0,212,255,.25);
+color:var(--accent-cyan);
+font-size:12px}
+.npc-card{
+display:flex;
+gap:10px;
+align-items:center;
+padding:11px;
+border:1px solid var(--border);
+border-radius:14px;
+background:#0b111d;
+margin:8px 0}
+.social-card{
+padding:14px;
+border:1px dashed var(--border-glow);
+border-radius:16px;
+background:rgba(212,175,55,.05)}
+
+    @media(max-width:1180px){
+.navbar{
+grid-template-columns:1fr}
+.nav-menu,.profile{
+justify-content:flex-start}
+.navbar{
+height:auto;
+padding:12px}
+.layout{
+grid-template-columns:1fr}
+.sidebar,.rightbar{
+display:none}
+.hero-stats,.grid-2,.grid-3,.chart-grid{
+grid-template-columns:1fr 1fr}
+.keyboard{
+position:static;
+transform:none;
+margin:18px auto 76px}
+.footer{
+grid-template-columns:1fr}
+}
+@media(max-width:720px){
+.hero-stats,.grid-2,.grid-3,.typing-hud,.chart-grid{
+grid-template-columns:1fr}
+.typing-area{
+font-size:20px}
+.key{
+min-width:26px}
+.key.space{
+width:130px}
+.setting-row{
+grid-template-columns:1fr}
+.hero-panel h1{
+font-size:26px}
+}
+
+  
+/* =========================================================
+   FIX: Typing prompt wrapping
+   Soal latihan harus tetap berada di dalam kartu/kolom.
+   Setiap karakter dibuat inline-block agar browser bisa
+   membungkus teks antar karakter walaupun spasi dirender
+   sebagai non-breaking space untuk kebutuhan visual trainer.
+   ========================================================= */
+.typing-area{
+  max-width:100%;
+  overflow-x:hidden;
+  overflow-y:auto;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+.typing-area .char{
+  display:inline-block;
+  vertical-align:baseline;
+}
+
+
+/* =========================================================
+   MOBILE + MODAL FIXES
+   1) Keyboard virtual tidak fixed di mobile dan bisa scroll.
+   2) Tombol modal menahan ripple agar tidak meluber.
+   ========================================================= */
+.modal .btn{
+  position:relative;
+  overflow:hidden;
+}
+@media(max-width:720px){
+  .keyboard{
+    position:static !important;
+    transform:none !important;
+    width:100%;
+    max-width:100%;
+    margin:12px auto 84px;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .keyboard .kb-row{
+    justify-content:flex-start;
+    min-width:max-content;
+  }
+  .keyboard .key{
+    min-width:22px;
+    height:32px;
+    font-size:10px;
+    border-radius:7px;
+  }
+  .keyboard .key.space{
+    width:120px;
+    min-width:120px;
+  }
+}
+
+
+/* =========================================================
+   UX PATCH 06-28: onboarding delay, mobile nav, flash prompt,
+   timer bar, pause overlay, result confetti, stats animation,
+   cursor blink, owned badge, light theme support.
+   ========================================================= */
+@keyframes fadeSlideUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.stat-card{opacity:0;animation:fadeSlideUp .3s ease forwards;animation-delay:calc(var(--i,0) * .08s)}
+@keyframes blink{50%{background:rgba(212,175,55,.35)}}
+.typing-area .char.current{animation:blink .7s step-end infinite}
+.typing-area.flash{animation:promptFlash .32s ease}
+@keyframes promptFlash{50%{border-color:var(--accent-cyan);box-shadow:0 0 28px rgba(0,212,255,.45)}}
+.typing-area.paused{position:relative;filter:saturate(.55);opacity:.72}
+.typing-area.paused::after{content:"PAUSED";position:absolute;inset:0;display:grid;place-items:center;background:rgba(8,11,20,.72);color:var(--accent-gold);font-family:Rajdhani;font-size:46px;font-weight:900;letter-spacing:4px;text-shadow:0 0 24px var(--border-glow);border-radius:inherit}
+.timer-track{height:5px;background:#070b13;border:1px solid var(--border);border-radius:999px;overflow:hidden;margin:10px 0 4px}.timer-track #timer-bar{height:100%;width:100%;background:linear-gradient(90deg,var(--accent-green),var(--accent-cyan),var(--accent-gold));transition:width 1s linear;border-radius:999px}
+.wpm-spark{display:block;margin:4px auto 0;width:80px;height:30px;opacity:.9}.shop-card{position:relative}.owned-badge{position:absolute;right:10px;top:10px;background:rgba(16,185,129,.18);border:1px solid rgba(16,185,129,.65);color:var(--accent-green);border-radius:999px;padding:3px 7px;font-size:11px;font-weight:800}.kb-legend{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--text-secondary)}.kb-dot{width:12px;height:12px;border-radius:50%;display:inline-block;box-shadow:0 0 10px currentColor}.confetti{pointer-events:none;position:absolute;inset:0;overflow:hidden}.confetti i{position:absolute;top:-20px;width:8px;height:14px;background:var(--accent-gold);animation:fall 1.6s linear forwards;left:calc(var(--x) * 1%);animation-delay:calc(var(--d) * .08s)}.confetti i:nth-child(3n){background:var(--accent-cyan)}.confetti i:nth-child(3n+1){background:var(--accent-purple)}@keyframes fall{to{transform:translateY(520px) rotate(720deg);opacity:0}}#mobile-menu{display:none}
+@media(max-width:720px){#mobile-menu{display:inline-flex}.navbar .nav-menu{display:none;width:100%;padding-top:10px}.navbar.nav-open .nav-menu{display:flex}.navbar{grid-template-columns:1fr auto}.navbar .profile{grid-column:1 / -1}.brand{min-width:0}}
+
+
+/* PATCH: pause overlay anchor, light typing contrast, mobile keyboard spacing */
+.typing-area{position:relative;}
+@media(max-width:720px){.layout{padding-bottom:200px;}}
+
+
+
+/* =========================================================
+   REDESIGN UX/UI PATCH — visual only, no JavaScript changes
+   Fokus: keterbacaan pengguna baru, hierarki visual, spacing,
+   responsif mobile, dan penekanan area latihan.
+   ========================================================= */
+
+/* 1. NAVBAR — lebih lega dan terbaca */
+.navbar{
+  grid-template-columns:300px 1fr 360px;
+  gap:14px;
+  min-height:84px;
+}
+.brand{
+  padding-right:18px;
+  border-right:1px solid rgba(255,255,255,.10);
+}
+.profile{
+  padding-left:18px;
+  border-left:1px solid rgba(255,255,255,.10);
+}
+.nav-menu{
+  align-items:stretch;
+}
+.nav-btn{
+  min-width:92px;
+  min-height:56px;
+  padding:8px 12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  font-size:18px;
+  line-height:1.05;
+}
+.nav-btn::after{
+  display:block;
+  font-family:Inter,system-ui,sans-serif;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.3px;
+  color:var(--text-muted);
+  text-transform:uppercase;
+}
+.nav-btn[data-page="home"]::after{content:"Dashboard";}
+.nav-btn[data-page="practice"]::after{content:"Latihan inti";}
+.nav-btn[data-page="arena"]::after{content:"Duel & ranking";}
+.nav-btn[data-page="shop"]::after{content:"Upgrade";}
+.nav-btn[data-page="stats"]::after{content:"Analitik";}
+.nav-btn[data-page="achievements"]::after{content:"Badge";}
+.profile b#player-name-view{
+  font-family:Rajdhani,Inter,sans-serif;
+  font-size:20px;
+  letter-spacing:.4px;
+  color:var(--text-primary);
+}
+.level-badge{
+  display:inline-flex;
+  margin-top:3px;
+  font-size:14px;
+  font-weight:900;
+  box-shadow:0 0 18px rgba(212,175,55,.18);
+}
+
+/* 2. HERO STATS — konteks angka lebih jelas */
+.hero-stats{
+  gap:18px;
+}
+.stat-card{
+  padding:20px 18px 22px;
+  min-height:142px;
+}
+.stat-card::before{
+  content:"";
+  position:absolute;
+  left:16px;
+  right:16px;
+  bottom:0;
+  height:4px;
+  border-radius:999px 999px 0 0;
+  background:var(--accent-cyan);
+  box-shadow:0 0 18px currentColor;
+}
+.stat-card:nth-child(1)::before{background:var(--accent-cyan);}
+.stat-card:nth-child(2)::before{background:var(--accent-gold);}
+.stat-card:nth-child(3)::before{background:var(--accent-red);}
+.stat-card:nth-child(4)::before{background:var(--accent-purple);}
+.stat-icon{
+  font-size:40px;
+}
+.stat-value{
+  font-size:40px;
+  line-height:1;
+}
+.stat-card .muted{
+  display:block;
+  margin-top:6px;
+  font-size:15px;
+  font-weight:800;
+  color:var(--text-primary);
+}
+.stat-card .muted::after{
+  display:block;
+  margin-top:5px;
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-secondary);
+}
+.stat-card:nth-child(1) .muted::after{content:"kata per menit terbaik";}
+.stat-card:nth-child(2) .muted::after{content:"persentase sesi terbaik";}
+.stat-card:nth-child(3) .muted::after{content:"hari latihan beruntun";}
+.stat-card:nth-child(4) .muted::after{content:"akumulasi progres level";}
+.trend{
+  font-size:13px;
+  font-weight:800;
+}
+
+/* 3. LAYOUT 3 KOLOM — fungsi panel lebih jelas */
+.sidebar .panel,
+.rightbar .panel{
+  position:relative;
+  overflow:hidden;
+}
+.sidebar .panel::before,
+.rightbar .panel::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto 0;
+  height:4px;
+  background:rgba(255,255,255,.14);
+}
+.sidebar .panel:nth-child(1){
+  background:linear-gradient(180deg,rgba(24,33,50,.98),rgba(13,17,23,.96));
+}
+.sidebar .panel:nth-child(1)::before{background:var(--accent-cyan);}
+.sidebar .panel:nth-child(2)::before{background:var(--accent-green);}
+.sidebar .panel:nth-child(3)::before{background:var(--accent-purple);}
+.rightbar .panel:nth-child(1)::before{background:var(--accent-gold);}
+.rightbar .panel:nth-child(2)::before{background:var(--accent-purple);}
+.rightbar .panel:nth-child(3)::before{background:var(--accent-cyan);}
+.sidebar .panel h3,
+.rightbar .panel h3{
+  padding:8px 10px;
+  margin:-4px -4px 12px;
+  border-radius:12px;
+  background:rgba(255,255,255,.045);
+  font-size:20px;
+}
+.side-link{
+  min-height:44px;
+  font-size:15px;
+  font-weight:800;
+}
+
+/* 4. PRACTICE — area ketik dan kontrol lebih dominan */
+#page-practice .panel:first-child{
+  border-color:rgba(0,212,255,.35);
+  box-shadow:0 0 34px rgba(0,212,255,.06), var(--card-shadow);
+}
+.typing-area{
+  min-height:260px;
+  padding:28px;
+  border:1px solid rgba(0,212,255,.42);
+  box-shadow:inset 0 0 0 1px rgba(0,212,255,.08),0 0 28px rgba(0,212,255,.12);
+  font-size:27px;
+}
+.typing-area:focus{
+  border-color:var(--accent-cyan);
+  box-shadow:inset 0 0 0 1px rgba(0,212,255,.2),0 0 36px rgba(0,212,255,.22);
+}
+.typing-controls{
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:18px;
+  background:rgba(255,255,255,.025);
+}
+#start-typing{
+  min-height:48px;
+  padding:12px 24px;
+  font-size:18px;
+  letter-spacing:.4px;
+  box-shadow:0 0 28px rgba(212,175,55,.25);
+}
+#restart-typing,
+#pause-typing,
+#guide-btn{
+  min-height:42px;
+  font-weight:900;
+}
+.typing-hud{
+  gap:12px;
+}
+.hud-box{
+  min-height:96px;
+  border-width:1.5px;
+  background:linear-gradient(180deg,rgba(17,24,39,.94),rgba(8,13,23,.92));
+}
+.typing-hud .hud-box:nth-child(1){border-color:rgba(0,212,255,.7);box-shadow:0 0 18px rgba(0,212,255,.08);}
+.typing-hud .hud-box:nth-child(2){border-color:rgba(212,175,55,.75);box-shadow:0 0 18px rgba(212,175,55,.08);}
+.typing-hud .hud-box:nth-child(3){border-color:rgba(156,163,175,.55);}
+.typing-hud .hud-box:nth-child(4){border-color:rgba(239,68,68,.75);box-shadow:0 0 18px rgba(239,68,68,.08);}
+.typing-hud .hud-box:nth-child(5){border-color:rgba(139,92,246,.75);box-shadow:0 0 18px rgba(139,92,246,.08);}
+.typing-hud .hud-box:nth-child(6){border-color:rgba(16,185,129,.75);box-shadow:0 0 18px rgba(16,185,129,.08);}
+.hud-val{
+  font-size:34px;
+}
+
+/* 5. TOKO & UPGRADE — kategori lebih kontras */
+.upgrade-card{
+  background:linear-gradient(180deg,#0d1422,#090e18);
+  border-left:4px solid var(--accent-gold);
+}
+.shop-card{
+  background:linear-gradient(180deg,#101827,#0a111d);
+  border-left:4px solid var(--accent-cyan);
+}
+.shop-card:nth-last-child(-n+3){
+  border-left-color:var(--accent-purple);
+  background:linear-gradient(180deg,rgba(139,92,246,.13),rgba(10,17,29,.98));
+}
+.price{
+  display:inline-block;
+  font-size:22px;
+  margin:4px 0 10px;
+  text-shadow:0 0 18px rgba(212,175,55,.2);
+}
+.upgrade-card h3,
+.shop-card h3{
+  font-size:21px;
+}
+
+/* 6. STATISTIK — chart lebih lega */
+.chart-grid{
+  gap:24px;
+}
+#page-stats .panel h3{
+  display:inline-block;
+  padding-bottom:7px;
+  border-bottom:3px solid var(--accent-cyan);
+  font-size:21px;
+}
+#page-stats .panel:nth-child(2) h3{border-bottom-color:var(--accent-gold);}
+#page-stats .panel:nth-child(3) h3{border-bottom-color:var(--accent-red);}
+#page-stats .panel:nth-child(4) h3,
+#page-stats .panel:nth-child(5) h3{border-bottom-color:var(--accent-purple);}
+.heatmap{
+  margin-top:10px;
+  padding:10px;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:rgba(255,255,255,.025);
+}
+.heat{
+  min-height:30px;
+  font-weight:900;
+}
+
+/* 7. ACHIEVEMENTS & SKILL TREE — state lebih jelas */
+.achievement{
+  background:rgba(31,41,55,.78);
+}
+.achievement.unlocked{
+  background:linear-gradient(180deg,rgba(16,185,129,.16),rgba(17,24,39,.94));
+  border-color:rgba(16,185,129,.75);
+  box-shadow:0 0 26px rgba(16,185,129,.12);
+}
+.skill-node{
+  opacity:.45;
+  position:relative;
+  transition:.2s;
+}
+.skill-node:not(.unlocked)::before{
+  content:"🔒";
+  position:absolute;
+  right:8px;
+  top:6px;
+  font-size:20px;
+  opacity:.9;
+}
+.skill-node.unlocked{
+  opacity:1;
+  border-color:rgba(139,92,246,.9);
+  box-shadow:0 0 32px rgba(139,92,246,.28), inset 0 0 20px rgba(139,92,246,.06);
+}
+.skill-node.unlocked::before{
+  content:"✨";
+  position:absolute;
+  right:8px;
+  top:6px;
+}
+
+/* 8. FOOTER — lebih mudah dibaca */
+.footer{
+  font-size:15px;
+  font-weight:800;
+  padding:12px 22px;
+}
+.footer>div{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:26px;
+}
+.footer>div:not(:last-child){
+  border-right:1px solid rgba(255,255,255,.12);
+}
+.footer>div::first-letter{
+  font-size:22px;
+}
+
+/* 9. MODAL & TOAST — feedback lebih menonjol */
+.modal{
+  padding:28px;
+}
+.modal .hud-val{
+  font-size:46px;
+}
+.modal h2{
+  font-size:28px;
+}
+.toast{
+  min-width:280px;
+  padding:15px 16px;
+  font-size:15px;
+  font-weight:700;
+}
+.toast::before{
+  margin-right:8px;
+  font-size:17px;
+}
+.toast.success::before{content:"✅";}
+.toast.error::before{content:"❌";}
+.toast:not(.success):not(.error)::before{content:"ℹ️";}
+
+/* 10. RESPONSIF MOBILE — kontrol lebih nyaman disentuh */
+@media(max-width:720px){
+  .navbar{
+    min-height:72px;
+    gap:8px;
+  }
+  .brand,
+  .profile{
+    border:0;
+    padding-left:0;
+    padding-right:0;
+  }
+  .nav-btn{
+    width:100%;
+    min-height:50px;
+    font-size:17px;
+  }
+  .typing-controls{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .typing-controls .btn,
+  #start-typing,
+  #restart-typing,
+  #pause-typing,
+  #guide-btn,
+  .typing-controls .select{
+    width:100%;
+    min-height:44px;
+  }
+  .typing-hud{
+    grid-template-columns:repeat(2,1fr);
+    gap:10px;
+  }
+  .hud-box{
+    padding:14px 10px;
+    min-height:94px;
+  }
+  .hud-val{
+    font-size:30px;
+  }
+  .typing-area{
+    min-height:240px;
+    font-size:18px;
+    padding:18px;
+  }
+  .footer{
+    font-size:14px;
+  }
+  .footer>div:not(:last-child){
+    border-right:0;
+    border-bottom:1px solid rgba(255,255,255,.10);
+    padding-bottom:6px;
+  }
+}
+
+</style>
+</head>
+<body>
+  <div id="loading-screen"><div class="loader"><div class="loader-logo">⌨ TYPEMASTER</div><div class="muted">Idle Typing Empire sedang dimuat...</div><div class="loader-bar"><span></span></div></div></div>
+  <div id="app" class="app hidden">
+    <nav class="navbar">
+      <div class="brand"><div class="avatar">⌨</div><div><div class="brand-title">TYPEMASTER</div><div class="brand-sub">Idle Typing Empire</div></div></div><button class="btn small" id="mobile-menu" aria-label="Buka menu">☰</button>
+      <div class="nav-menu" id="top-nav"></div>
+      <div class="profile"><div class="avatar" id="avatar-view">🧑‍💻</div><div><b id="player-name-view">Player</b><div><span class="level-badge" id="level-view">Lv.1</span></div></div><button class="btn small" id="notify-btn">🔔</button><button class="btn small" id="settings-btn">⚙️</button></div>
+    </nav>
+    <section class="hero-stats" id="hero-stats"></section>
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="panel"><h3>🧭 Navigasi</h3><div id="side-nav"></div></div>
+        <div class="panel"><h3>📈 Progress Level</h3><div class="metric"><span>XP</span><span id="xp-label">0/100</span></div><div class="progress"><span id="xp-bar"></span></div><button class="btn small primary" style="margin-top:10px;width:100%" id="open-tutorial">📖 Tutorial</button></div>
+        <div class="panel"><h3>🌳 Skill Tree</h3><div id="mini-skills"></div><button class="btn small cyan" style="margin-top:10px;width:100%" data-page="achievements">Lihat Skill</button></div>
+      </aside>
+      <main class="main" id="main-content">
+        <section id="page-home" class="page active"></section>
+        <section id="page-practice" class="page"></section>
+        <section id="page-arena" class="page"></section>
+        <section id="page-shop" class="page"></section>
+        <section id="page-stats" class="page"></section>
+        <section id="page-achievements" class="page"></section>
+      </main>
+      <aside class="rightbar">
+        <div class="panel"><h3>🏆 Leaderboard</h3><div id="mini-leaderboard"></div></div>
+        <div class="panel"><h3>🎖️ Pencapaian Terbaru</h3><div id="recent-achievements"></div></div>
+        <div class="panel"><h3>👥 Teman</h3><div id="friends-box"></div></div>
+      </aside>
+    </div>
+    <div id="keyboard-visualizer" class="keyboard"></div>
+    <footer class="footer"><div>🎯 Harian: <span id="daily-footer">0/500 kata</span></div><div>💰 Income: <span id="income-footer">0</span>/detik • Coins <span id="coins-footer">0</span></div><div>🔔 <span id="notice-footer">Selamat berlatih 10 jari!</span></div></footer>
+  </div>
+  <div id="modal-container"></div><div id="toast-container" class="toast-container"></div>
+<script>
+/* =========================================================
+   TypeMaster: Idle Typing Empire — Single HTML Game
+   Semua logika: state, idle engine, typing trainer, toko,
+   statistik, tutorial, settings, save/load, audio, charts.
+   ========================================================= */
+(function(){
+'use strict';
+
+
+const $=(s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const today=()=>new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Jakarta'});
+const fmt=n=>Math.floor(n).toLocaleString('id-ID'); const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const xpForLevel=level=>Math.floor(100*Math.pow(1.5,level-1));
+const nav=[['home','🏠 Beranda'],['practice','🎯 Latihan'],['arena','⚔️ Arena'],['shop','🏪 Toko'],['stats','📊 Statistik'],['achievements','🏆 Prestasi']];
+const words={easy:'aku kamu dia kita meja buku emas langit cepat benar jari tombol rumah hitam biru hijau data kode bisa coba fokus rajin pagi malam'.split(' '),medium:'latihan keyboard akurasi mengetik belajar sekolah komputer kerajaan digital pahlawan prestasi bisnis strategi ekonomi motivasi indonesia'.split(' '),hard:'produktivitas transformasi internasional perkembangan algoritma visualizer konsekuensi konsentrasi profesional sinkronisasi'.split(' '),expert:'asynchronous polymorphism encapsulation microservice cryptocurrency observability idempotency refactoring serialization'.split(' ')};
+const sentences=['Kesuksesan dimulai dari kebiasaan kecil yang dilakukan setiap hari.','Mengetik sepuluh jari membuat pekerjaan digital terasa lebih ringan.','Bersakit sakit dahulu bersenang senang kemudian.','Ilmu tanpa amal bagaikan pohon tanpa buah.','Data yang rapi membantu keputusan bisnis menjadi lebih akurat.','Konsistensi adalah kunci untuk menguasai kecepatan dan akurasi.','Latihan singkat yang teratur lebih baik daripada latihan panjang yang jarang.','Jari yang kuat terbentuk dari gerakan yang benar dan berulang.','Kecepatan akan datang setelah akurasi menjadi kebiasaan.','Fokus pada layar dan percaya pada posisi jari di home row.','Setiap kesalahan adalah sinyal untuk memperlambat ritme sebentar.','Pekerjaan digital menjadi lebih produktif saat mengetik terasa otomatis.','Pemrogram yang baik menulis kode dengan teliti dan membaca error dengan sabar.','Kerajaan mengetik dibangun dari ribuan kata kecil yang diselesaikan.','Hari ini adalah waktu terbaik untuk memperbaiki satu persen kemampuanmu.','Gunakan napas yang tenang agar ritme mengetik tetap stabil.','Jangan mengejar skor tinggi sebelum dasar sepuluh jari terasa nyaman.','Keyboard adalah alat musik produktivitas bagi pekerja digital modern.','Akurasi sembilan puluh lima persen lebih berharga daripada kecepatan liar.','Satu sesi lagi bisa menjadi awal rekor terbaik barumu.'];
+const codes=[`function hitungWPM(chars, menit) {\n  return (chars / 5) / menit;\n}`,`const user = {\n  name: 'TypeMaster',\n  level: 10,\n  active: true\n};`,`for i in range(10):\n    print('latihan', i)`,`<section class="arena">\n  <h1>Hello Typist</h1>\n</section>`];
+const symbols='12345 67890 @#$% ^&*() +=[]{} <>?/ ::;; !! -- __'.split(' ');
+const upgrades=[
+{id:'auto',name:'🤖 Auto-Typer',desc:'+1 coin/detik pasif per level',baseCost:100,baseIncome:1,type:'income'},
+{id:'dict',name:'📚 Kamus Kata',desc:'+5% XP per kata per level',baseCost:250,type:'xp'},
+{id:'mech',name:'⌨️ Keyboard Mekanik',desc:'+10% coin saat mengetik per level',baseCost:500,type:'coinBonus'},
+{id:'monitor',name:'🖥️ Monitor Gaming',desc:'Area ketik lebih lebar + bonus fokus',baseCost:1000,type:'focus'},
+{id:'finger',name:'🧠 Finger Training',desc:'Unlock jari baru + akurasi bonus',baseCost:2000,type:'accuracy'},
+{id:'studio',name:'🏢 Typing Studio',desc:'Semua income x2',baseCost:5000,type:'multiplier',mult:2},
+{id:'partner',name:'🤝 Typing Partner',desc:'Buka tantangan duel dan bonus XP',baseCost:10000,type:'partner'},
+{id:'agency',name:'🌐 Typing Agency',desc:'Income x5 dan dunia baru',baseCost:25000,type:'multiplier',mult:5}
+];
+const shopItems=[
+{id:'skin_cyan',cat:'🎨 Skin Keyboard',name:'Neon Cyan',price:350,prop:'skin',value:'cyan'}, {id:'skin_gold',cat:'🎨 Skin Keyboard',name:'Gold Elite',price:900,prop:'skin',value:'gold'}, {id:'skin_matrix',cat:'🎨 Skin Keyboard',name:'Matrix Green',price:700,prop:'skin',value:'matrix'},
+{id:'font_fira',cat:'🔤 Font Pack',name:'Fira Code Feel',price:500,prop:'font',value:'Fira Code'}, {id:'font_plex',cat:'🔤 Font Pack',name:'IBM Plex Mono Feel',price:650,prop:'font',value:'IBM Plex Mono'},
+{id:'sound_type',cat:'🎵 Sound Pack',name:'Typewriter Classic',price:400,prop:'soundPack',value:'typewriter'}, {id:'sound_sci',cat:'🎵 Sound Pack',name:'Sci-Fi Beep',price:550,prop:'soundPack',value:'scifi'},
+{id:'av_ninja',cat:'🎭 Avatar & Badge',name:'Keyboard Ninja 🥷',price:800,prop:'avatar',value:'🥷'}, {id:'av_king',cat:'🎭 Avatar & Badge',name:'Gold King 👑',price:1400,prop:'avatar',value:'👑'},
+{id:'boost_xp',cat:'💡 Booster',name:'2x XP 1 Jam',price:120,prop:'booster',value:'xp'}, {id:'boost_coin',cat:'💡 Booster',name:'2x Coin 30 Menit',price:120,prop:'booster',value:'coin'}, {id:'boost_hint',cat:'💡 Booster',name:'Hint Jari 10 Menit',price:80,prop:'booster',value:'hint'}
+];
+const achievements=[
+{id:'first',icon:'🐌',name:'First Steps',desc:'Selesaikan sesi pertama',check:s=>s.stats.sessions>=1},
+{id:'speed60',icon:'⚡',name:'Speed Starter',desc:'Capai 60 WPM',check:s=>s.stats.bestWPM>=60},
+{id:'speed80',icon:'🚀',name:'Speed Demon',desc:'Capai 80 WPM',check:s=>s.stats.bestWPM>=80},
+{id:'acc95',icon:'🎯',name:'Sniper',desc:'Akurasi 95%+',check:s=>s.stats.bestAccuracy>=95},
+{id:'coins1k',icon:'💰',name:'Coin Collector',desc:'Kumpulkan 1.000 coins',check:s=>s.player.coins>=1000||s.stats.totalCoins>=1000},
+{id:'words500',icon:'📚',name:'Word Worker',desc:'Ketik 500 kata total',check:s=>s.stats.totalWords>=500},
+{id:'streak7',icon:'🔥',name:'On Fire',desc:'7 hari streak',check:s=>s.stats.streak>=7},
+{id:'upgrader',icon:'🏗️',name:'Empire Builder',desc:'Beli 5 upgrade',check:s=>Object.values(s.upgrades.levels).reduce((a,b)=>a+b,0)>=5},
+{id:'prestige',icon:'💎',name:'Diamond Fingers',desc:'Lakukan prestige pertama',check:s=>s.player.prestige>0},
+{id:'god',icon:'🏆',name:'Typing God',desc:'Unlock 9 pencapaian',check:s=>s.achievements.unlocked.length>=9}
+];
+const skillNodes=['MASTER TYPIST','Speed Master','Accuracy King','Sprint God','Endurance','Precision','Zero Error','Left Hand','Right Hand','Number Row','Symbol Pro','Index L','Index R','Pinky Strong','Thumb Zone'];
+const leaderboard=['NusantaraKeys','CyanSamurai','GoldTypist','ByteSultan','RajaWPM','Akurat99','KodeKilat','MechaFinger','BaliCoder','JakartaSwift'].map((n,i)=>({name:n,level:60-i*3,wpm:128-i*6,acc:99-i%5,badge:i<3?'👑':'⚡',avatar:['🦾','🥷','🧙','🤖','🦊'][i%5]}));
+const tips=['Letakkan jari telunjuk kiri di F dan kanan di J; rasakan tonjolan kecilnya.','Jangan melihat keyboard terlalu sering; gunakan visualizer sebagai panduan.','Akurasi lebih penting daripada kecepatan pada tahap awal.','Rilekskan bahu dan pergelangan tangan agar tahan lama.','Latih tombol yang sering salah selama 3 menit setiap hari.','Gunakan ritme stabil, bukan mengetik dengan ledakan singkat.'];
+const defaultState=()=>({player:{name:'Player',avatar:'🧑‍💻',level:1,xp:0,coins:150,gems:10,prestige:0},stats:{totalWords:0,totalChars:0,totalTime:0,totalCoins:0,bestWPM:0,bestAccuracy:0,streak:1,lastPlay:today(),sessions:0},upgrades:{levels:{}},settings:{sound:true,uiSound:true,music:false,volume:.35,theme:'dark',fontSize:'M',animation:'full',contrast:false,language:'id',difficulty:'auto',showWPM:true,strict:false,textLength:60,layout:'QWERTY',keyboard:true,highlightNext:true,skin:'default',font:'JetBrains Mono',soundPack:'mechanical'},history:[],achievements:{unlocked:[]},dailyMissions:{date:today(),completed:[],progress:{words:0,wpm60:0,modes:[],acc95:0}},owned:['default'],boosters:{xpUntil:0,coinUntil:0,hintUntil:0},fingerErrors:{},skillUnlocked:['Left Hand','Right Hand']});
+let state=load();
+let typing={active:false,mode:'word',difficulty:'easy',duration:60,timeLeft:60,text:'',index:0,errors:0,typed:0,correct:0,start:0,timer:null,combo:0,lives:3,ghost:null,results:[],usedPrompts:[],promptCount:0,paused:false,wpmHistory:[],lastWpmSample:0};
+let charts={}; let audioCtx=null; let currentPage='home'; let saveTimeout=null;
+function load(){try{const raw=localStorage.getItem('typemaster_save_v1'); if(raw){const s=Object.assign(defaultState(),JSON.parse(raw)); s.player=Object.assign(defaultState().player,s.player||{}); s.stats=Object.assign(defaultState().stats,s.stats||{}); s.settings=Object.assign(defaultState().settings,s.settings||{}); if(s.dailyMissions?.date!==today()) s.dailyMissions={date:today(),completed:[],progress:{words:0,wpm60:0,modes:[],acc95:0}}; s.skillUnlocked=Array.isArray(s.skillUnlocked)?s.skillUnlocked:defaultState().skillUnlocked; return s;}}catch(e){} return defaultState();}
+function saveNow(){try{localStorage.setItem('typemaster_save_v1',JSON.stringify(state));}catch(e){window.__typemasterMemorySave=JSON.stringify(state);}}
+function save(){clearTimeout(saveTimeout);saveTimeout=setTimeout(saveNow,2000);}
+function toast(msg,type='info'){const box=$('#toast-container');while(box.children.length>=3){box.firstElementChild.remove();}const t=document.createElement('div');t.className='toast '+type;t.innerHTML=msg;box.appendChild(t);setTimeout(()=>{t.style.opacity=0;t.style.transform='translateX(40px)';setTimeout(()=>t.remove(),250)},3600)}
+function play(freq=420,dur=.035,type='square'){if((!state.settings.sound && !state.settings.uiSound)||state.settings.soundPack==='silent')return; try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=state.settings.soundPack==='scifi'?'sine':type;o.frequency.value=state.settings.soundPack==='typewriter'?freq*.65:freq;g.gain.value=(state.settings.volume||.35)*.05;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+dur);o.stop(audioCtx.currentTime+dur)}catch(e){}}
+function coinMultiplier(){let m=1+((state.upgrades.levels.mech||0)*.1); if(Date.now()<state.boosters.coinUntil)m*=2; return m}
+function xpMultiplier(){let m=1+((state.upgrades.levels.dict||0)*.05); if(Date.now()<state.boosters.xpUntil)m*=2; return m}
+function globalIncomeMultiplier(){let m=1+state.player.prestige*.1; if(state.upgrades.levels.studio)m*=Math.pow(2,state.upgrades.levels.studio); if(state.upgrades.levels.agency)m*=Math.pow(5,state.upgrades.levels.agency); return m}
+function idleIncome(){return upgrades.reduce((t,u)=>t+(u.baseIncome||0)*(state.upgrades.levels[u.id]||0)*globalIncomeMultiplier(),0)}
+function addCoins(n){state.player.coins+=n;state.stats.totalCoins+=n;}
+function addXP(n){state.player.xp+=n; let leveled=false; while(state.player.xp>=xpForLevel(state.player.level)){state.player.xp-=xpForLevel(state.player.level);state.player.level++;leveled=true;toast('✨ Level naik ke <b>Lv.'+state.player.level+'</b>!','success');play(800,.12,'triangle')} if(leveled)renderAll();}
+function checkAchievements(){achievements.forEach(a=>{if(!state.achievements.unlocked.includes(a.id)&&a.check(state)){state.achievements.unlocked.push(a.id);toast(`🏆 Achievement unlocked: <b>${a.name}</b>`,'success');play(900,.16,'triangle')}})}
+function completeMission(id,msg){if(!state.dailyMissions.completed.includes(id)){state.dailyMissions.completed.push(id);toast('🎁 Misi selesai: '+msg,'success'); if(id==='words'){addCoins(100)} if(id==='wpm60'){addXP(200)} if(id==='modes'){state.player.gems+=1;toast('🎁 Loot Box dibuka: +1 gems','success')} if(id==='acc95'){state.player.gems+=50}}}
+function updateDaily(words,wpm,acc,mode){const p=state.dailyMissions.progress;p.words+=(words||0); if(wpm>=60)p.wpm60=1; if(acc>=95)p.acc95=1; if(mode&&!p.modes.includes(mode))p.modes.push(mode); if(p.words>=500)completeMission('words','Ketik 500 kata hari ini → +100 coins'); if(p.wpm60)completeMission('wpm60','Capai 60 WPM → +200 XP'); if(p.modes.length>=3)completeMission('modes','Selesaikan 3 mode berbeda → Loot Box'); if(p.acc95)completeMission('acc95','Akurasi 95%+ → +50 gems')}
+function animateNumber(el,val,suffix=''){if(!el)return;const old=parseFloat(el.dataset.val||0),start=performance.now(),dur=500;function step(t){const p=clamp((t-start)/dur,0,1);const v=old+(val-old)*(1-Math.pow(1-p,3));el.textContent=fmt(v)+suffix;if(p<1)requestAnimationFrame(step);else{el.dataset.val=val;el.textContent=fmt(val)+suffix}}requestAnimationFrame(step)}
+function renderCurrentPage(){if(currentPage==='home')renderHome();else if(currentPage==='practice')renderPractice();else if(currentPage==='arena')renderArena();else if(currentPage==='shop')renderShop();else if(currentPage==='stats')renderStats();else if(currentPage==='achievements')renderAchievements();}
+function renderAll(){renderNav();renderHeader();renderCurrentPage();renderKeyboard();renderSidebars();save();}
+function renderNav(){const mk=([id,label])=>`<button class="nav-btn ${id===currentPage?'active':''}" data-page="${id}">${label}</button>`;$('#top-nav').innerHTML=nav.map(mk).join('');$('#side-nav').innerHTML=nav.map(([id,label])=>`<button class="side-link ${id===currentPage?'active':''}" data-page="${id}"><span>${label}</span><span>›</span></button>`).join('')}
+function renderHeader(){ $('#player-name-view').textContent=state.player.name;$('#avatar-view').textContent=state.player.avatar;$('#level-view').textContent='Lv.'+state.player.level;const xpNeed=xpForLevel(state.player.level);$('#xp-label').textContent=`${fmt(state.player.xp)}/${fmt(xpNeed)}`;$('#xp-bar').style.width=(state.player.xp/xpNeed*100)+'%';$('#coins-footer').textContent=fmt(state.player.coins);$('#income-footer').textContent=idleIncome().toFixed(1);$('#daily-footer').textContent=`${fmt(state.dailyMissions.progress.words||0)}/500 kata`; const stats=[['⚡',Math.round(state.stats.bestWPM),'WPM Terbaik','↗ +'+(state.history[0]?.wpm||0)+' sesi'],['🎯',Math.round(state.stats.bestAccuracy),'Akurasi Tertinggi','↗ konsisten'],['🔥',state.stats.streak,'Streak Aktif (hari)','↗ hari ini'],['⭐',state.player.xp+(state.player.level-1)*100,'Total XP','↗ Lv '+state.player.level]];$('#hero-stats').innerHTML=stats.map((s,i)=>`<div class="stat-card" style="--i:${i}"><div class="stat-top"><span class="stat-icon">${s[0]}</span><span class="trend">${s[3]}</span></div><div class="stat-value" data-stat="${i}">0</div><div class="muted">${s[2]}</div></div>`).join('');stats.forEach((s,i)=>animateNumber($(`[data-stat="${i}"]`),s[1],i===1?'%':''));}
+function renderSidebars(){ $('#mini-leaderboard').innerHTML=leaderboard.slice(0,5).map((l,i)=>`<div class="leader-entry"><b>#${i+1}</b><span>${l.avatar} ${l.name}<br><small class="muted">Lv.${l.level} • ${l.badge}</small></span><b class="gold">${l.wpm}</b></div>`).join(''); const unlocked=state.achievements.unlocked.slice(-3); $('#recent-achievements').innerHTML=unlocked.length?unlocked.map(id=>{const a=achievements.find(x=>x.id===id);return `<div class="metric"><span>${a.icon} ${a.name}</span><span class="green">OK</span></div>`}).join(''):'<p class="muted">Belum ada. Selesaikan sesi pertama!</p>'; $('#friends-box').innerHTML=['BudiKeys','SariSpeed','DewaKode'].map((f,i)=>`<div class="npc-card"><span>${['🦊','🐼','🦉'][i]}</span><div><b>${f}</b><br><small class="muted">online • WPM ${70+i*9}</small></div><button class="btn small" data-duel="${f}">Duel</button></div>`).join(''); $('#mini-skills').innerHTML=skillNodes.slice(0,5).map(n=>`<div class="metric"><span>${n}</span><span class="${state.skillUnlocked.includes(n)?'green':'muted'}">${state.skillUnlocked.includes(n)?'✓':'🔒'}</span></div>`).join('')}
+function tutorialSeen(){try{return localStorage.getItem('typemaster_seen_tutorial')==='1';}catch(e){return !!window.__typemasterSeenTutorial;}}
+function renderHome(){ $('#page-home').innerHTML=`<div class="hero-panel"><h1>Bangun Kerajaan Mengetikmu</h1><p class="muted">Gabungan typing trainer 10 jari, idle tycoon, skill tree, misi harian, dan statistik real-time. Setiap kata menghasilkan coin. Setiap sesi membuat kerajaanmu lebih kuat.</p><div class="quick-actions"><button class="btn primary" data-page="practice">🎯 Quick Play</button><button class="btn cyan" id="home-sprint">⏱️ Sprint 15 Kata</button><button class="btn" data-page="shop">🏪 Beli Upgrade</button><button class="btn" id="home-prestige">💎 Prestige</button>${tutorialSeen()?'':'<button class="btn green" id="hero-tutorial">Baru pertama kali? Mulai Tutorial</button>'}</div></div><br><div class="grid-2"><div class="panel"><h2>🎯 Featured Challenge</h2><p><b>Minggu Ini:</b> Cyber Nusantara Sprint</p><p class="muted">Capai 75 WPM di mode Sprint dan dapatkan badge eksklusif.</p><div class="progress"><span style="width:${clamp(state.stats.bestWPM/75*100,0,100)}%"></span></div><br><button class="btn green" id="start-featured">Mulai Challenge</button></div><div class="panel"><h2>📋 Misi Aktif</h2>${missionHTML()}</div></div><br><div class="grid-3"><div class="panel"><h3>💰 Empire</h3><div class="metric-list"><div class="metric"><span>Coins</span><b class="gold">${fmt(state.player.coins)}</b></div><div class="metric"><span>Gems</span><b class="cyan">${fmt(state.player.gems)}</b></div><div class="metric"><span>Prestige</span><b class="purple">${fmt(state.player.prestige)}</b></div><div class="metric"><span>Idle Income</span><b class="green">${idleIncome().toFixed(1)}/d</b></div></div></div><div class="panel"><h3>🧠 Tips Kontekstual</h3><p>${tips[(state.stats.sessions+state.stats.totalWords)%tips.length]}</p><button class="btn small" id="open-guide">Panduan Posisi Jari</button></div><div class="panel"><h3>📦 Save Data</h3><button class="btn small" id="export-save">Export JSON</button> <button class="btn small" id="import-save">Import JSON</button> <button class="btn small red" id="reset-save">Reset</button></div></div>`;}
+function missionHTML(){const p=state.dailyMissions.progress,c=state.dailyMissions.completed;return `<div class="mission"><b>Ketik 500 kata</b><div class="progress"><span style="width:${clamp((p.words||0)/500*100,0,100)}%"></span></div><small>${fmt(p.words||0)}/500 → 100 coins ${c.includes('words')?'✅':''}</small></div><div class="mission"><b>Capai 60 WPM</b><div class="progress"><span style="width:${p.wpm60?100:0}%"></span></div><small>Reward 200 XP ${c.includes('wpm60')?'✅':''}</small></div><div class="mission"><b>Selesaikan 3 mode</b><div class="progress"><span style="width:${clamp((p.modes||[]).length/3*100,0,100)}%"></span></div><small>${(p.modes||[]).length}/3 → Loot Box ${c.includes('modes')?'✅':''}</small></div><div class="mission"><b>Akurasi 95%+</b><div class="progress"><span style="width:${p.acc95?100:0}%"></span></div><small>Reward 50 gems ${c.includes('acc95')?'✅':''}</small></div>`}
+function renderPractice(){ $('#page-practice').innerHTML=`<div class="panel"><h2>🎯 Typing Arena <span class="badge">v2 fixed</span></h2><div class="panel" style="margin-bottom:12px;border-color:rgba(0,212,255,.35)"><b class="cyan">Timer bebas + soal lanjut otomatis aktif.</b><br><small class="muted">Isi detik sendiri, lalu selama waktu belum habis setiap soal selesai akan langsung diganti soal baru yang berbeda.</small></div><div class="mode-tabs">${[['word','🎯 Kata'],['sentence','📝 Kalimat'],['symbols','🔢 Angka & Simbol'],['code','💻 Kode'],['sprint','⏱️ Sprint'],['endurance','🏃 Endurance']].map(m=>`<button class="btn small ${typing.mode===m[0]?'primary':''}" data-mode="${m[0]}">${m[1]}</button>`).join('')}</div><div class="typing-controls"><select id="difficulty" class="select"><option value="easy">Mudah</option><option value="medium">Sedang</option><option value="hard">Sulit</option><option value="expert">Expert</option></select><label class="muted" for="duration">Timer</label><input id="duration" class="select" type="number" min="10" max="3600" step="5" value="60" style="width:110px"><span class="muted">detik</span><button class="btn primary" id="start-typing">▶ Mulai</button><button class="btn red small" id="restart-typing">↻ Reset</button><button class="btn small" id="pause-typing">⏸ Pause</button><button class="btn" id="guide-btn">📖 Panduan</button><span class="lives" id="lives-view">❤❤❤</span></div><div class="typing-hud"><div class="hud-box"><div class="hud-val" id="hud-wpm">0</div><canvas id="wpm-spark" class="wpm-spark" width="80" height="30"></canvas><small>WPM</small></div><div class="hud-box"><div class="hud-val" id="hud-acc">100%</div><small>Akurasi</small></div><div class="hud-box"><div class="hud-val" id="hud-cpm">0</div><small>CPM</small></div><div class="hud-box"><div class="hud-val" id="hud-errors">0</div><small>Error</small></div><div class="hud-box"><div class="hud-val" id="hud-combo">0</div><small>Combo</small></div><div class="hud-box"><div class="hud-val" id="hud-time">60</div><small>Detik</small></div></div><div id="ghost-hud" class="panel hidden" style="margin:10px 0;border-color:rgba(139,92,246,.45)"><div class="metric"><span>👻 Ghost Duel</span><b id="ghost-label">-</b></div><div class="progress"><span id="ghost-bar" style="width:0%"></span></div></div><div id="typing-area" class="typing-area" tabindex="0" aria-label="Area latihan mengetik">Tekan Mulai, lalu ketik sesuai teks di sini.</div><div class="timer-track"><div id="timer-bar"></div></div><p class="muted">✅ UPDATE AKTIF: Timer sekarang bisa diisi bebas (10–3600 detik). Jika satu soal selesai tetapi waktu belum habis, soal berikutnya otomatis muncul dan diusahakan tidak mengulang dalam ronde yang sama. Input memakai keyboard fisik.</p></div>`; $('#difficulty').value=typing.difficulty; $('#duration').value=typing.duration; const diffEl=$('#difficulty'); if(diffEl){const hide=typing.mode==='sprint'||typing.mode==='endurance';diffEl.disabled=hide;diffEl.style.opacity=hide?.45:1;diffEl.title=hide?'Mode ini memakai aturan kesulitan khusus.':'';} const pb=$('#pause-typing'); if(pb)pb.textContent=typing.paused?'▶ Resume':'⏸ Pause'; updateHUD();}
+function renderArena(){ $('#page-arena').innerHTML=`<div class="grid-2"><div class="panel"><h2>🏆 Leaderboard Global Top 100</h2>${leaderboard.map((l,i)=>`<div class="leader-entry"><b>#${i+1}</b><span>${l.avatar} <b>${l.name}</b><br><small class="muted">Lv.${l.level} • ${l.badge} • Akurasi ${l.acc}%</small></span><b class="gold">${l.wpm} WPM</b></div>`).join('')}<div class="leader-entry"><b>#${leaderboard.length+1}</b><span>${state.player.avatar} <b>${state.player.name}</b><br><small class="muted">Lv.${state.player.level} • Kamu</small></span><b class="cyan">${Math.round(state.stats.bestWPM)} WPM</b></div></div><div><div class="panel"><h2>⚔️ Duel 1v1</h2><p class="muted">Tantang NPC/teman. Keduanya mengetik teks sama; skor dibanding otomatis.</p>${leaderboard.slice(0,4).map(l=>`<div class="npc-card"><span>${l.avatar}</span><div><b>${l.name}</b><br><small class="muted">Ghost ${l.wpm} WPM</small></div><button class="btn small cyan" data-duel="${l.name}">Tantang</button></div>`).join('')}<button class="btn" id="copy-invite">Salin Kode Undangan</button></div><br><div class="panel"><h2>📣 Share Hasil</h2><div class="social-card" id="share-card">${state.player.avatar} ${state.player.name}<br>Best WPM: <b>${Math.round(state.stats.bestWPM)}</b> • Akurasi: <b>${Math.round(state.stats.bestAccuracy)}%</b><br>#TypeMasterEmpire</div><br><button class="btn primary" id="share-result">Copy Share Card</button></div></div></div>`;}
+function renderShop(){ $('#page-shop').innerHTML=`<div class="panel"><h2>🏪 Toko & Upgrade Empire</h2><p class="muted">Coins: <b class="gold">${fmt(state.player.coins)}</b> • Gems: <b class="cyan">${fmt(state.player.gems)}</b></p></div><br><div class="panel"><h3>🏗️ Upgrade Tree</h3><div class="shop-grid">${upgrades.map(u=>{const lv=state.upgrades.levels[u.id]||0,cost=Math.floor(u.baseCost*Math.pow(1.6,lv));return `<div class="upgrade-card"><h3>${u.name}</h3><p class="muted">${u.desc}</p><div class="metric"><span>Level</span><b>${lv}/10</b></div><div class="progress"><span style="width:${clamp(lv/10*100,0,100)}%"></span></div><div class="metric"><span>Harga</span><b class="price">${fmt(cost)}</b></div><button class="btn primary buy-upgrade" data-upgrade="${u.id}" ${state.player.coins<cost?'disabled':''}>Beli Upgrade</button></div>`}).join('')}</div></div><br><div class="panel"><h3>🛒 Item Store</h3><div class="shop-grid">${shopItems.map(it=>{const owned=state.owned.includes(it.id);return `<div class="shop-card ${owned?'owned':''}">${owned?'<span class="owned-badge">✅ Aktif</span>':''}<span class="badge">${it.cat}</span><h3>${it.name}</h3><p class="price">${fmt(it.price)} coins</p><button class="btn ${owned?'green':'cyan'} buy-item" data-item="${it.id}" ${owned?'':' '+(state.player.coins<it.price?'disabled':'')}>${owned?'Pakai / Aktifkan':'Beli'}</button></div>`}).join('')}</div></div>`;}
+function renderStats(){ const hist=state.history.slice(0,30).reverse(); $('#page-stats').innerHTML=`<div class="panel"><h2>📊 Statistik & Analitik Lengkap</h2><div class="grid-3"><div class="metric"><span>Total Kata</span><b>${fmt(state.stats.totalWords)}</b></div><div class="metric"><span>Total Waktu</span><b>${fmt(state.stats.totalTime)} dtk</b></div><div class="metric"><span>Sesi</span><b>${fmt(state.stats.sessions)}</b></div></div></div><br><div class="chart-grid"><div class="panel"><h3>Grafik WPM</h3><div class="canvas-wrap"><canvas id="wpmChart"></canvas></div></div><div class="panel"><h3>Grafik Akurasi</h3><div class="canvas-wrap"><canvas id="accChart"></canvas></div></div><div class="panel"><h3>Distribusi Error</h3><div class="canvas-wrap"><canvas id="errChart"></canvas></div></div><div class="panel"><h3>Keyboard Heat Map</h3><div class="heatmap">${'QWERTYUIOPASDFGHJKLZXCVBNM1234567890'.split('').map(k=>`<div class="heat ${(state.fingerErrors[k.toLowerCase()]||0)>2?'hot':''}" title="${state.fingerErrors[k.toLowerCase()]||0} error">${k}</div>`).join('')}</div><h3>Top Kata Tersulit</h3><p class="muted">${Object.entries(state.fingerErrors).sort((a,b)=>b[1]-a[1]).slice(0,10).map(x=>x[0]+': '+x[1]).join(', ')||'Belum ada error tercatat.'}</p></div><div class="panel"><h3>Error per Jari</h3><div class="canvas-wrap"><canvas id="fingerChart"></canvas></div></div></div><br><div class="panel"><h3>Riwayat 30 Sesi</h3>${hist.length?hist.map(h=>`<div class="metric"><span>${h.date} • ${h.mode}</span><span>${Math.round(h.wpm)} WPM • ${Math.round(h.acc)}% • ${h.words} kata</span></div>`).join(''):'<p class="muted">Belum ada sesi.</p>'}</div>`; setTimeout(renderCharts,50);}
+function renderAchievements(){ $('#page-achievements').innerHTML=`<div class="grid-2"><div class="panel"><h2>🏆 Pencapaian</h2><div class="ach-grid">${achievements.map(a=>{const u=state.achievements.unlocked.includes(a.id);return `<div class="achievement ${u?'unlocked':''}"><h3>${a.icon} ${a.name}</h3><p class="muted">${a.desc}</p><b class="${u?'green':'muted'}">${u?'Unlocked':'Locked'}</b></div>`}).join('')}</div></div><div class="panel"><h2>🌳 Skill Tree & Jari System</h2><div class="skill-tree">${[['MASTER TYPIST'],['Speed Master','Accuracy King'],['Sprint God','Endurance','Precision','Zero Error'],['Left Hand','Right Hand','Number Row','Symbol Pro'],['Index L','Index R','Pinky Strong','Thumb Zone']].map(row=>`<div class="skill-row">${row.map(n=>{const u=state.skillUnlocked.includes(n);const cost=250+skillNodes.indexOf(n)*120;return `<div class="skill-node ${u?'unlocked':''}"><b>${n}</b><br><small>${u?'Unlocked':'Cost '+cost+' XP'}</small><br>${u?'✅':`<button class="btn small unlock-skill" data-skill="${n}" data-cost="${cost}">Unlock</button>`}</div>`}).join('')}</div>`).join('')}</div><hr style="border-color:var(--border)"><h3>✋ Peta 10 Jari</h3>${fingerGuideHTML()}</div></div>`;}
+function fingerGuideHTML(){return `<div class="finger-map"><div class="hand"><h3>TANGAN KIRI</h3><div class="hand-row"><span>Kelingking</span><b>A Q Z</b></div><div class="hand-row"><span>Manis</span><b>S W X</b></div><div class="hand-row"><span>Tengah</span><b>D E C</b></div><div class="hand-row"><span>Telunjuk</span><b>F R T G V B</b></div><div class="hand-row"><span>Ibu Jari</span><b>Spasi</b></div></div><div class="hand"><h3>TANGAN KANAN</h3><div class="hand-row"><span>Telunjuk</span><b>J Y U H N M</b></div><div class="hand-row"><span>Tengah</span><b>K I ,</b></div><div class="hand-row"><span>Manis</span><b>L O .</b></div><div class="hand-row"><span>Kelingking</span><b>; P /</b></div><div class="hand-row"><span>Ibu Jari</span><b>Spasi</b></div></div></div>`}
+function renderKeyboard(){if(!state.settings.keyboard||currentPage!=='practice'){$('#keyboard-visualizer').classList.add('hidden');return} $('#keyboard-visualizer').classList.remove('hidden'); const rows=['1234567890-=', 'qwertyuiop[]', 'asdfghjkl;\\', 'zxcvbnm,./']; const fingerMap={q:'l1',a:'l1',z:'l1',w:'l2',s:'l2',x:'l2',e:'l3',d:'l3',c:'l3',r:'l4',f:'l4',v:'l4',t:'l4',g:'l4',b:'l4',y:'r1',h:'r1',n:'r1',u:'r1',j:'r1',m:'r1',i:'r2',k:'r2',',':'r2',o:'r3',l:'r3','.':'r3',p:'r4',';':'r4','/':'r4'}; $('#keyboard-visualizer').innerHTML=rows.map(r=>`<div class="kb-row">${r.split('').map(k=>`<div class="key finger-${fingerMap[k]||'r5'}" data-key="${k}">${k.toUpperCase()}</div>`).join('')}</div>`).join('')+`<div class="kb-row"><div class="key space finger-l5" data-key=" ">SPACE</div></div><div class="kb-legend"><span>Kiri</span><span class="kb-dot" style="background:#ef4444;color:#ef4444"></span><span class="kb-dot" style="background:#f97316;color:#f97316"></span><span class="kb-dot" style="background:#eab308;color:#eab308"></span><span class="kb-dot" style="background:#22c55e;color:#22c55e"></span><span class="kb-dot" style="background:#14b8a6;color:#14b8a6"></span><span>•</span><span class="kb-dot" style="background:#06b6d4;color:#06b6d4"></span><span class="kb-dot" style="background:#3b82f6;color:#3b82f6"></span><span class="kb-dot" style="background:#8b5cf6;color:#8b5cf6"></span><span class="kb-dot" style="background:#d946ef;color:#d946ef"></span><span class="kb-dot" style="background:#ec4899;color:#ec4899"></span><span>Kanan</span></div>`;}
+function highlightKey(k){const key=k==='Space'?' ':k.toLowerCase();$$('.key.active').forEach(x=>x.classList.remove('active'));const el=$(`.key[data-key="${CSS.escape(key)}"]`);if(el){el.classList.add('active');setTimeout(()=>el.classList.remove('active'),140)}}
+function markNext(){ $$('.key.next').forEach(x=>x.classList.remove('next')); if(!state.settings.highlightNext||!typing.active)return; const ch=typing.text[typing.index]; if(!ch)return; const el=$(`.key[data-key="${CSS.escape(ch.toLowerCase())}"]`); if(el)el.classList.add('next');}
+function generateText(){ if(typing.mode==='sentence')return sentences[Math.floor(Math.random()*sentences.length)]; if(typing.mode==='symbols')return Array.from({length:25},()=>symbols[Math.floor(Math.random()*symbols.length)]).join(' '); if(typing.mode==='code')return codes[Math.floor(Math.random()*codes.length)]; let list=words[typing.difficulty]||words.easy; if(typing.mode==='sprint')return Array.from({length:15},()=>list[Math.floor(Math.random()*list.length)]).join(' '); if(typing.mode==='endurance')return Array.from({length:80},(_,i)=>{const d=i>30?'hard':i>12?'medium':'easy';const l=words[d];return l[Math.floor(Math.random()*l.length)]}).join(' '); return Array.from({length:Math.ceil(state.settings.textLength/5)},()=>list[Math.floor(Math.random()*list.length)]).join(' ');} 
+function generateUniqueText(){let candidate=generateText();let tries=0;while(typing.usedPrompts.includes(candidate)&&tries<120){candidate=generateText();tries++;}if(typing.usedPrompts.includes(candidate)){typing.usedPrompts=[];}typing.usedPrompts.push(candidate);typing.promptCount=(typing.promptCount||0)+1;return candidate;}
+function nextPromptInRound(){typing.text=generateUniqueText();typing.index=0;typing.results=[];renderText();markNext();const area=$('#typing-area');if(area){area.classList.remove('flash');void area.offsetWidth;area.classList.add('flash');area.focus();}toast('Soal berikutnya #' + typing.promptCount + ' — timer tetap berjalan.','success');}
+function startTyping(mode){ if(mode){typing.mode=mode} typing.difficulty=$('#difficulty')?.value||typing.difficulty; typing.duration=clamp(parseInt($('#duration')?.value||typing.duration,10)||60,10,3600); typing.usedPrompts=[]; typing.promptCount=0; typing.paused=false; typing.results=[]; typing.wpmHistory=[]; typing.lastWpmSample=0; typing.text=generateUniqueText(); typing.index=0; typing.errors=0; typing.typed=0; typing.correct=0; typing.combo=0; typing.lives=3; typing.timeLeft=typing.mode==='sprint'?999:typing.duration; typing.start=Date.now(); typing.active=true; clearInterval(typing.timer); typing.timer=setInterval(tick,1000); renderText(); const tb=$('#timer-bar'); if(tb) tb.style.width='100%'; updateHUD(); markNext(); $('#typing-area')?.focus(); toast('Mulai mode '+typing.mode+' selama '+(typing.mode==='sprint'?'sprint':typing.duration+' detik')+'. Ketik sekarang!','success');}
+function stopTyping(reason='Sesi selesai'){ if(!typing.active)return; typing.active=false; clearInterval(typing.timer); const elapsed=Math.max((Date.now()-typing.start)/1000,1); const wpm=((typing.typed/5)/(elapsed/60)); const acc=typing.typed?typing.correct/typing.typed*100:100; const wordsDone=Math.max(1,Math.round(typing.correct/5)); const coinGain=Math.max(1,Math.round(wordsDone*coinMultiplier())); const xpGain=Math.max(1,Math.round((wordsDone*2+wpm*.5)*(acc/100)*xpMultiplier())); addCoins(coinGain); addXP(xpGain); state.stats.totalWords+=wordsDone; state.stats.totalChars+=typing.typed; state.stats.totalTime+=Math.round(elapsed); state.stats.sessions++; state.stats.bestWPM=Math.max(state.stats.bestWPM,wpm); state.stats.bestAccuracy=Math.max(state.stats.bestAccuracy,acc); state.stats.lastPlay=today(); state.history.unshift({date:new Date().toLocaleString('id-ID'),mode:typing.mode,wpm,acc,errors:typing.errors,words:wordsDone}); state.history=state.history.slice(0,30); updateDaily(wordsDone,wpm,acc,typing.mode); checkAchievements(); save(); renderAll(); showSessionModal(reason,wpm,acc,coinGain,xpGain,wordsDone);}
+function tick(){ if(!typing.active||typing.paused)return; if(typing.mode!=='sprint'&&typing.mode!=='endurance'){typing.timeLeft--; if(typing.timeLeft<=0)stopTyping('Waktu habis!')} sampleWpmHistory(); updateHUD();}
+function renderText(){ const area=$('#typing-area'); if(!area)return; area.innerHTML=typing.text.split('').map((ch,i)=>{const stateClass=i<typing.index?(typing.results[i]?'correct':'wrong'):'';return `<span class="char ${stateClass} ${i===typing.index?'current':''}" data-i="${i}">${ch==='\n'?'↵<br>':ch===' '?'&nbsp;':escapeHTML(ch)}</span>`}).join('');}
+function escapeHTML(s){return String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
+function handleKey(e){ if(['Shift','Control','Alt','Meta','CapsLock','Tab'].includes(e.key))return; highlightKey(e.key===' '?'Space':e.key); if(state.settings.sound&&!typing.active)play(e.key==='Backspace'?180:420+Math.random()*160,.035); if(!typing.active||typing.paused)return; if(e.key==='Backspace'){ if(state.settings.strict&&typing.index>0){typing.index--;typing.typed=Math.max(0,typing.typed-1); typing.results[typing.index]=undefined; const el=$(`.char[data-i="${typing.index}"]`); if(el)el.className='char current'} e.preventDefault(); updateHUD(); return; } let key=e.key; if(key==='Enter')key='\n'; if(key.length!==1&&key!=='\n')return; e.preventDefault(); const expected=typing.text[typing.index]; const el=$(`.char[data-i="${typing.index}"]`); typing.typed++; if(key===expected){typing.results[typing.index]=true;typing.correct++;typing.combo++; if(el)el.classList.add('correct'); if(state.settings.sound)play(520+Math.random()*200,.03); const reward=.2*coinMultiplier(); addCoins(reward); }else{typing.results[typing.index]=false;if(state.settings.sound)play(180,.08,'sawtooth'); if(navigator.vibrate)navigator.vibrate(35); typing.errors++;typing.combo=0; if(el)el.classList.add('wrong'); state.fingerErrors[(expected||'?').toLowerCase()]=(state.fingerErrors[(expected||'?').toLowerCase()]||0)+1; if(typing.mode==='endurance'){typing.lives--; if(typing.lives<=0){stopTyping('Nyawa habis!');return}} if(state.settings.strict){updateHUD();return} } typing.index++; if(typing.index>=typing.text.length){ if(typing.mode==='endurance'){typing.text+=' '+generateUniqueText(); renderText()} else if(typing.mode==='sprint'){stopTyping('Sprint selesai!');} else if(typing.timeLeft>0){nextPromptInRound();} else {stopTyping('Waktu habis!');} } else {$$('.char.current').forEach(c=>c.classList.remove('current')); const next=$(`.char[data-i="${typing.index}"]`); if(next)next.classList.add('current')} updateHUD();markNext();}
+function updateHUD(){const elapsed=typing.active?Math.max((Date.now()-typing.start)/1000,1):1; const wpm=typing.active?((typing.typed/5)/(elapsed/60)):0; const acc=typing.typed?typing.correct/typing.typed*100:100; const cpm=typing.active?typing.typed/(elapsed/60):0; const set=(id,v)=>{const e=$(id);if(e)e.textContent=v}; set('#hud-wpm',Math.round(wpm));set('#hud-acc',Math.round(acc)+'%');set('#hud-cpm',Math.round(cpm));set('#hud-errors',typing.errors);set('#hud-combo',typing.combo);set('#hud-time',typing.mode==='sprint'?'∞':typing.timeLeft);set('#lives-view','❤'.repeat(Math.max(0,typing.lives))+'♡'.repeat(3-Math.max(0,typing.lives)));$('#coins-footer').textContent=fmt(state.player.coins);const tb=$('#timer-bar');if(tb){tb.style.width=(typing.mode==='sprint'||typing.mode==='endurance')?'100%':clamp((typing.timeLeft/Math.max(1,typing.duration))*100,0,100)+'%';}updateGhostHUD(elapsed);renderWpmSparkline();}
+function updateGhostHUD(elapsed){const box=$('#ghost-hud');if(!box)return;if(!typing.ghost||!typing.active){box.classList.add('hidden');return;}box.classList.remove('hidden');const npc=leaderboard.find(x=>x.name===typing.ghost)||{wpm:70,name:typing.ghost};const ghostChars=npc.wpm*5*(elapsed/60);const ghostPct=clamp(ghostChars/Math.max(1,typing.text.length)*100,0,100);const playerPct=clamp(typing.index/Math.max(1,typing.text.length)*100,0,100);const label=$('#ghost-label');const bar=$('#ghost-bar');if(label)label.textContent=`${npc.name}: ${Math.round(ghostPct)}% • Kamu: ${Math.round(playerPct)}%`;if(bar)bar.style.width=ghostPct+'%';}
+function sampleWpmHistory(){const elapsed=Math.max((Date.now()-typing.start)/1000,1);if(elapsed-typing.lastWpmSample>=2){const wpm=(typing.typed/5)/(elapsed/60);typing.wpmHistory.push(Math.round(wpm));typing.wpmHistory=typing.wpmHistory.slice(-10);typing.lastWpmSample=elapsed;}}
+function renderWpmSparkline(){const c=$('#wpm-spark');if(!c)return;const ctx=c.getContext('2d'),w=c.width,h=c.height;ctx.clearRect(0,0,w,h);const data=typing.wpmHistory.length?typing.wpmHistory:[0];const max=Math.max(10,...data);ctx.strokeStyle='#00D4FF';ctx.lineWidth=2;ctx.beginPath();data.forEach((v,i)=>{const x=i*(w/Math.max(1,data.length-1));const y=h-3-(v/max)*(h-6);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();}
+function togglePause(){if(!typing.active)return toast('Tidak ada sesi aktif untuk pause.','error');typing.paused=!typing.paused;const area=$('#typing-area');if(typing.paused){clearInterval(typing.timer);area?.blur();area?.classList.add('paused');toast('Sesi di-pause.','info');}else{clearInterval(typing.timer);typing.timer=setInterval(tick,1000);area?.classList.remove('paused');area?.focus();toast('Sesi dilanjutkan.','success');}const b=$('#pause-typing');if(b)b.textContent=typing.paused?'▶ Resume':'⏸ Pause';}
+function showSessionModal(reason,wpm,acc,coins,xp,wordsDone){const score=wpm*(acc/100);const grade=score>=90?'S':score>=70?'A':score>=45?'B':'C';const best=Math.max(1,state.stats.bestWPM);const pct=clamp(wpm/best*100,0,120);const conf=wpm>70?`<div class="confetti">${Array.from({length:28},(_,i)=>`<i style="--x:${(i*37)%100};--d:${i%9}"></i>`).join('')}</div>`:'';openModal(`<div style="position:relative">${conf}<div class="modal-head"><h2>🏁 ${reason}</h2><button class="btn small" data-close>✕</button></div><div class="grid-3"><div class="hud-box"><div class="hud-val gold">${grade}</div><small>Grade</small></div><div class="hud-box"><div class="hud-val gold">${Math.round(wpm)}</div><small>WPM</small></div><div class="hud-box"><div class="hud-val cyan">${Math.round(acc)}%</div><small>Akurasi</small></div></div><br><div class="panel"><div class="metric"><span>Perbandingan vs Best WPM</span><b>${Math.round(pct)}%</b></div><div class="progress"><span style="width:${Math.min(100,pct)}%"></span></div></div><p>Coins <b class="green">+${fmt(coins)}</b> • XP <b class="cyan">+${fmt(xp)}</b> • Kata ${fmt(wordsDone)} • Error ${typing.errors}</p><p class="muted">Tip: ${tips[Math.floor(Math.random()*tips.length)]}</p><button class="btn primary" id="modal-again">Main Lagi</button> <button class="btn" data-page="stats" data-close>Statistik</button></div>`)}
+function fingerErrorData(){const groups={Kelingking_Kiri:['q','a','z'],Manis_Kiri:['w','s','x'],Tengah_Kiri:['e','d','c'],Telunjuk_Kiri:['r','f','v','t','g','b'],Ibu_Jari:[' '],Telunjuk_Kanan:['y','h','n','u','j','m'],Tengah_Kanan:['i','k',','],Manis_Kanan:['o','l','.'],Kelingking_Kanan:['p',';','/']};const colors=['#ef4444','#f97316','#eab308','#22c55e','#14b8a6','#06b6d4','#3b82f6','#8b5cf6','#ec4899'];const labels=Object.keys(groups);const data=labels.map(k=>groups[k].reduce((a,ch)=>a+(state.fingerErrors[ch]||0),0));return{labels,data,colors};}
+function renderCharts(){ if(!$('#wpmChart'))return; const hist=state.history.slice(0,14).reverse(); const labels=hist.map((h,i)=>'#'+(i+1)); const wpm=hist.map(h=>Math.round(h.wpm)); const acc=hist.map(h=>Math.round(h.acc)); const hasChart=typeof Chart!=='undefined'; ['wpmChart','accChart','errChart','fingerChart'].forEach(id=>{try{if(charts[id]&&charts[id].destroy)charts[id].destroy();}catch(e){}}); if(!hasChart){drawFallback('wpmChart',wpm,'#00D4FF');drawFallback('accChart',acc,'#10B981');drawFallback('errChart',[typing.errors||1,Math.max(1,state.stats.sessions)],'#D4AF37');return} charts.wpmChart=new Chart($('#wpmChart'),{type:'line',data:{labels,datasets:[{label:'WPM',data:wpm,borderColor:'#00D4FF',backgroundColor:'rgba(0,212,255,.15)',tension:.35,fill:true}]},options:chartOpts()}); charts.accChart=new Chart($('#accChart'),{type:'bar',data:{labels,datasets:[{label:'Akurasi',data:acc,backgroundColor:'rgba(16,185,129,.75)'}]},options:chartOpts()}); charts.errChart=new Chart($('#errChart'),{type:'pie',data:{labels:['Typo','Skip','Reverse'],datasets:[{data:[Math.max(1,state.history.reduce((a,h)=>a+h.errors,0)),3,2],backgroundColor:['#EF4444','#D4AF37','#8B5CF6']}]},options:{plugins:{legend:{labels:{color:'#F9FAFB'}}}}});const fd=fingerErrorData();if($('#fingerChart'))charts.fingerChart=new Chart($('#fingerChart'),{type:'bar',data:{labels:fd.labels,datasets:[{label:'Error',data:fd.data,backgroundColor:fd.colors}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#9CA3AF'},grid:{color:'#1F2937'}},y:{ticks:{color:'#9CA3AF'},grid:{color:'#1F2937'}}},plugins:{legend:{labels:{color:'#F9FAFB'}}}}});}
+function chartOpts(){return {responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#9CA3AF'},grid:{color:'#1F2937'}},y:{ticks:{color:'#9CA3AF'},grid:{color:'#1F2937'}}},plugins:{legend:{labels:{color:'#F9FAFB'}}}}}
+function drawFallback(id,data,color){const c=$('#'+id); if(!c)return; const ctx=c.getContext('2d'),w=c.width=c.clientWidth,h=c.height=c.clientHeight;ctx.clearRect(0,0,w,h);ctx.strokeStyle=color;ctx.lineWidth=3;ctx.beginPath();data.forEach((v,i)=>{const x=20+i*(w-40)/Math.max(1,data.length-1),y=h-20-(v/Math.max(1,...data))*(h-40);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();ctx.fillStyle='#9CA3AF';ctx.fillText('Chart fallback (CDN offline)',18,18)}
+function buyUpgrade(id){const u=upgrades.find(x=>x.id===id); const lv=state.upgrades.levels[id]||0; const cost=Math.floor(u.baseCost*Math.pow(1.6,lv)); if(state.player.coins<cost)return toast('Coins belum cukup.','error'); state.player.coins-=cost; state.upgrades.levels[id]=lv+1; if(u.type==='partner')toast('🤝 Typing Partner aktif: duel memberi bonus XP!','success'); toast('Upgrade dibeli: '+u.name+' Lv.'+(lv+1),'success'); checkAchievements(); renderAll();}
+function buyItem(id){const it=shopItems.find(x=>x.id===id); if(!state.owned.includes(id)){ if(state.player.coins<it.price)return toast('Coins belum cukup.','error'); state.player.coins-=it.price; state.owned.push(id); toast('Item dibeli: '+it.name,'success'); } if(it.prop==='booster'){const dur=it.value==='xp'?3600000:it.value==='coin'?1800000:600000; state.boosters[it.value+'Until']=Date.now()+dur; toast('Booster aktif: '+it.name,'success'); } else {state.settings[it.prop]=it.value; if(it.prop==='avatar')state.player.avatar=it.value; toast('Item aktif: '+it.name,'success');} applyTheme(); renderAll();}
+function unlockSkill(n,cost){ if(state.skillUnlocked.includes(n))return; if(state.player.xp<cost)return toast('XP belum cukup untuk unlock skill.','error'); state.player.xp-=cost;state.skillUnlocked.push(n);toast('Skill unlocked: '+n,'success');renderAll();}
+function prestige(){ if(state.player.level<10&&state.player.coins<50000)return toast('Prestige butuh Lv.10 atau 50.000 coins.','error'); if(!confirm('Prestige akan reset coins dan upgrade, tapi memberi token bonus permanen. Lanjut?'))return; state.player.prestige++; state.player.coins=100; state.player.level=1; state.player.xp=0; state.upgrades.levels={}; toast('💎 Prestige berhasil! Bonus income permanen +10%.','success');checkAchievements();renderAll();}
+function openModal(html){$('#modal-container').innerHTML=`<div class="modal-backdrop"><div class="modal">${html}</div></div>`}
+function closeModal(){ $('#modal-container').innerHTML=''; }
+function tutorial(){try{localStorage.setItem('typemaster_seen_tutorial','1');}catch(e){window.__typemasterSeenTutorial=true;}openModal(`<div class="modal-head"><h2>📖 Onboarding TypeMaster</h2><button class="btn small" data-close>✕</button></div><div class="tabs">${[1,2,3,4,5,6].map(i=>`<button class="btn small ${i===1?'primary':''}" data-tut="${i}">Layar ${i}</button>`).join('')}</div><div id="tutorial-content"></div><div style="margin-top:14px"><button class="btn primary" id="tutorial-next">Lanjut</button> <button class="btn" data-close>Selesai</button></div>`); renderTutorial(1)}
+function renderTutorial(i){const arr=[`<h3>1. Selamat datang!</h3><p>Masukkan nama karakter.</p><input class="text-input" id="tut-name" value="${state.player.name}"><button class="btn small" id="save-name">Simpan Nama</button>`,`<h3>2. Posisi tangan benar</h3>${fingerGuideHTML()}`,`<h3>3. Peta keyboard 10 jari</h3><p>Klik tombol virtual untuk melihat highlight; tombol berikutnya akan bersinar emas saat latihan.</p>`,`<h3>4. Tes kecepatan awal</h3><p>Mulai mode Kata 30 detik untuk kalibrasi level.</p><button class="btn cyan" data-page="practice" data-close id="calibration-start">Mulai Kalibrasi</button>`,`<h3>5. Coin & Upgrade</h3><p>Setiap kata memberi coin. Upgrade Auto-Typer memberi passive income tiap detik.</p>`,`<h3>6. Tujuan harian</h3><p>Pilih target: 500 kata, 60 WPM, 3 mode, dan 95% akurasi. Semua memberi reward.</p>`]; $('#tutorial-content').innerHTML=arr[i-1]; $('#tutorial-next').dataset.next=(i%6)+1; $$('.tabs [data-tut]').forEach(b=>b.classList.toggle('primary',+b.dataset.tut===i));}
+function settingsModal(){openModal(`<div class="modal-head"><h2>⚙️ Pengaturan Lengkap</h2><button class="btn small" data-close>✕</button></div><div class="tabs">${['Umum','Tampilan','Audio','Latihan','Keyboard','Notifikasi'].map((t,i)=>`<button class="btn small ${i===0?'primary':''}" data-tab="set-${i}">${t}</button>`).join('')}</div><div id="set-0" class="tab-content active"><div class="setting-row"><b>Nama pengguna</b><input id="set-name" class="text-input" value="${state.player.name}"></div><div class="setting-row"><b>Avatar</b><select id="set-avatar" class="select"><option>🧑‍💻</option><option>🥷</option><option>👑</option><option>🤖</option><option>🦊</option></select></div><div class="setting-row"><b>Bahasa</b><select id="set-lang" class="select"><option value="id">Indonesia</option><option value="en">English</option></select></div><div class="setting-row"><b>Zona Waktu</b><span>Asia/Jakarta</span></div></div><div id="set-1" class="tab-content"><div class="setting-row"><b>Light Mode</b><button class="toggle" data-toggle="theme"></button></div><div class="setting-row"><b>Ukuran font teks</b><select id="set-fontsize" class="select"><option>S</option><option>M</option><option>L</option><option>XL</option></select></div><div class="setting-row"><b>Animasi</b><select id="set-animation" class="select"><option value="full">Penuh</option><option value="minimal">Minimal</option><option value="off">Off</option></select></div><div class="setting-row"><b>Kontras tinggi</b><button class="toggle" data-toggle="contrast"></button></div></div><div id="set-2" class="tab-content"><div class="setting-row"><b>Suara keyboard</b><button class="toggle" data-toggle="sound"></button></div><div class="setting-row"><b>Volume suara tombol</b><input id="set-volume" class="range" type="range" min="0" max="1" step=".01" value="${state.settings.volume}"></div><div class="setting-row"><b>Sound Pack</b><select id="set-soundpack" class="select"><option value="mechanical">Keyboard Mechanical</option><option value="typewriter">Typewriter Classic</option><option value="scifi">Sci-Fi Beep</option><option value="silent">Silent Mode</option></select></div><div class="setting-row"><b>Musik background</b><button class="toggle" data-toggle="music"></button></div><div class="setting-row"><b>Sound effect UI</b><button class="toggle" data-toggle="uiSound"></button></div></div><div id="set-3" class="tab-content"><div class="setting-row"><b>Bahasa teks latihan</b><select id="set-prac-lang" class="select"><option value="id">Indonesia</option><option value="en">Inggris</option><option value="mix">Campuran</option></select></div><div class="setting-row"><b>Difficulty</b><select id="set-diff" class="select"><option value="auto">Auto-adapt</option><option value="manual">Manual</option></select></div><div class="setting-row"><b>Tampilkan WPM live</b><button class="toggle" data-toggle="showWPM"></button></div><div class="setting-row"><b>Mode strict</b><button class="toggle" data-toggle="strict"></button></div><div class="setting-row"><b>Panjang teks default</b><input id="set-length" type="range" min="30" max="180" value="${state.settings.textLength}" class="range"></div></div><div id="set-4" class="tab-content"><div class="setting-row"><b>Layout keyboard</b><select id="set-layout" class="select"><option>QWERTY</option><option>DVORAK</option><option>AZERTY</option></select></div><div class="setting-row"><b>Keyboard virtual</b><button class="toggle" data-toggle="keyboard"></button></div><div class="setting-row"><b>Highlight tombol berikutnya</b><button class="toggle" data-toggle="highlightNext"></button></div><div class="setting-row"><b>Warna jari</b><select class="select"><option>Default</option><option>Custom</option></select></div></div><div id="set-5" class="tab-content"><div class="setting-row"><b>Notifikasi daily challenge</b><button class="toggle on" data-simple-toast="Daily challenge reminder aktif"></button></div><div class="setting-row"><b>Reminder latihan harian</b><input type="time" class="select" value="19:00"></div><div class="setting-row"><b>Leaderboard alert</b><button class="toggle on" data-simple-toast="Leaderboard alert aktif"></button></div></div><button class="btn primary" id="save-settings">Simpan Pengaturan</button> <button class="btn" id="export-save-settings">Export Save</button>`); syncSettingsForm();}
+function syncSettingsForm(){const s=state.settings; $('#set-avatar').value=state.player.avatar; $('#set-lang').value=s.language; $('#set-fontsize').value=s.fontSize; $('#set-animation').value=s.animation; $('#set-soundpack').value=s.soundPack; $('#set-diff').value=s.difficulty; $('#set-layout').value=s.layout; $$('.toggle[data-toggle]').forEach(t=>{const k=t.dataset.toggle; t.classList.toggle('on',k==='theme'?s.theme==='light':!!s[k])})}
+function saveSettings(){const s=state.settings; state.player.name=$('#set-name')?.value||state.player.name; state.player.avatar=$('#set-avatar')?.value||state.player.avatar; s.language=$('#set-lang')?.value||s.language; s.fontSize=$('#set-fontsize')?.value||s.fontSize; s.animation=$('#set-animation')?.value||s.animation; s.volume=parseFloat($('#set-volume')?.value||s.volume); s.soundPack=$('#set-soundpack')?.value||s.soundPack; s.difficulty=$('#set-diff')?.value||s.difficulty; s.textLength=parseInt($('#set-length')?.value||s.textLength,10); s.layout=$('#set-layout')?.value||s.layout; save();applyTheme();renderAll();toast('Pengaturan disimpan.','success')}
+function applyTheme(){let lt=$('#light-theme');if(state.settings.theme==='light'){if(!lt){lt=document.createElement('style');lt.id='light-theme';document.head.appendChild(lt);}lt.textContent=':root{--bg-primary:#F8F9FA;--bg-secondary:#FFFFFF;--bg-card:#FFFFFF;--text-primary:#111827;--text-secondary:#374151;--text-muted:#6B7280;--border:#E5E7EB;--border-glow:rgba(212,175,55,.35);--glow-cyan:rgba(0,130,180,.16)} body{background:#F8F9FA!important;} .panel,.stat-card,.shop-card,.achievement,.mission,.upgrade-card{box-shadow:0 12px 30px rgba(17,24,39,.08)!important;} .typing-area{background:#F0F4F8!important;color:#111827!important;} .hud-val{color:#111827!important;} .hud-box{background:#FFFFFF!important;}';}else if(lt){lt.remove();}document.body.style.filter=state.settings.contrast?'contrast(1.15) saturate(1.2)':'none'; const area=$('#typing-area'); if(area){area.style.fontSize={S:'20px',M:'25px',L:'30px',XL:'36px'}[state.settings.fontSize]||'25px'; area.style.fontFamily=`${state.settings.font}, JetBrains Mono, monospace`;} const kb=$('#keyboard-visualizer'); if(kb){kb.style.borderColor=state.settings.skin==='gold'?'#D4AF37':state.settings.skin==='cyan'?'#00D4FF':state.settings.skin==='matrix'?'#10B981':'#1F2937';}}
+function exportSave(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='typemaster-save.json';a.click();URL.revokeObjectURL(a.href);toast('Save diekspor.','success')}
+function importSave(){const inp=document.createElement('input');inp.type='file';inp.accept='.json,application/json';inp.onchange=()=>{const f=inp.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{state=Object.assign(defaultState(),JSON.parse(rd.result));save();renderAll();toast('Import berhasil.','success')}catch(e){toast('File save tidak valid.','error')}};rd.readAsText(f)};inp.click()}
+function switchPage(id){currentPage=id;renderCurrentPage();$$('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+id));$$('[data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===id));renderKeyboard(); if(id==='practice')setTimeout(()=>{$('#typing-area')?.focus();},100); if(id==='stats')setTimeout(renderCharts,80); window.scrollTo({top:0,behavior:'smooth'});}
+function handleClick(e){const b=e.target.closest('button,[data-page]'); if(!b)return; const rect=b.getBoundingClientRect(); if(b.tagName==='BUTTON'){const r=document.createElement('span');r.className='ripple';r.style.left=(e.clientX-rect.left)+'px';r.style.top=(e.clientY-rect.top)+'px';r.style.width=r.style.height=Math.max(rect.width,rect.height)+'px';b.appendChild(r);setTimeout(()=>r.remove(),600); if(state.settings.uiSound)play(600,.025,'triangle')}
+ if(b.id==='mobile-menu'){$('.navbar').classList.toggle('nav-open');return;} if(b.dataset.page){switchPage(b.dataset.page); if(b.hasAttribute('data-close'))closeModal()}
+ if(b.dataset.mode){typing.ghost=null;typing.mode=b.dataset.mode;renderPractice();toast('Mode dipilih: '+typing.mode)}
+ if(b.id==='start-typing'){typing.ghost=null;startTyping();} if(b.id==='restart-typing'){if(typing.active&&!confirm('Yakin ingin reset? Sesi akan hilang.'))return;typing.active=false;typing.paused=false;clearInterval(typing.timer);startTyping();} if(b.id==='pause-typing')togglePause(); if(b.id==='home-sprint'||b.id==='start-featured'){typing.ghost=null;switchPage('practice'); setTimeout(()=>{typing.mode='sprint';renderPractice();startTyping('sprint')},80)} if(b.id==='home-prestige')prestige(); if(b.id==='open-tutorial'||b.id==='open-guide'||b.id==='guide-btn'||b.id==='hero-tutorial')tutorial(); if(b.id==='settings-btn')settingsModal(); if(b.id==='notify-btn')toast('🔔 Notifikasi: misi harian, income idle, dan leaderboard aktif.','success'); if(b.classList.contains('buy-upgrade'))buyUpgrade(b.dataset.upgrade); if(b.classList.contains('buy-item'))buyItem(b.dataset.item); if(b.classList.contains('unlock-skill'))unlockSkill(b.dataset.skill,+b.dataset.cost); if(b.dataset.duel){switchPage('practice'); setTimeout(()=>{typing.ghost=b.dataset.duel;typing.mode='sprint';renderPractice();startTyping('sprint');toast('Duel melawan '+typing.ghost+' dimulai!','success')},80)} if(b.id==='copy-invite'){navigator.clipboard?.writeText('TYPE-'+Math.random().toString(36).slice(2,8).toUpperCase());toast('Kode undangan disalin.','success')} if(b.id==='share-result'){navigator.clipboard?.writeText($('#share-card').innerText);toast('Share card disalin.','success')} if(b.id==='export-save'||b.id==='export-save-settings')exportSave(); if(b.id==='import-save')importSave(); if(b.id==='reset-save'){if(confirm('Reset semua save?')){localStorage.removeItem('typemaster_save_v1');state=defaultState();renderAll();toast('Save direset.','success')}} if(b.hasAttribute('data-close'))closeModal(); if(b.dataset.tut)renderTutorial(+b.dataset.tut); if(b.id==='tutorial-next')renderTutorial(+b.dataset.next); if(b.id==='save-name'){state.player.name=$('#tut-name').value||'Player';renderAll();toast('Nama disimpan.','success')} if(b.dataset.tab){$$('.tab-content').forEach(x=>x.classList.remove('active'));$('#'+b.dataset.tab).classList.add('active');$$('[data-tab]').forEach(x=>x.classList.remove('primary'));b.classList.add('primary')} if(b.dataset.toggle){const k=b.dataset.toggle;if(k==='theme')state.settings.theme=state.settings.theme==='light'?'dark':'light';else state.settings[k]=!state.settings[k];b.classList.toggle('on',k==='theme'?state.settings.theme==='light':state.settings[k]); if(k==='soundPack'&&state.settings.soundPack==='silent')state.settings.sound=false; save();applyTheme();toast('Toggle '+k+' diperbarui.','success')} if(b.dataset.simpleToast){b.classList.toggle('on');toast(b.dataset.simpleToast,'success')} if(b.id==='save-settings')saveSettings(); if(b.id==='modal-again'){closeModal();switchPage('practice');setTimeout(()=>startTyping(),40)} }
+function handleInput(e){if(e.target.id==='duration'){if(!e.target.value)return;let v=parseInt(e.target.value,10);if(Number.isNaN(v)){return;}v=clamp(v,10,3600);e.target.value=v;typing.duration=v;if(!typing.active){typing.timeLeft=v;updateHUD();}}}
+function handleChange(e){if(e.target.id==='difficulty')typing.difficulty=e.target.value;if(e.target.id==='duration'){let v=parseInt(e.target.value,10);if(Number.isNaN(v))v=60;v=clamp(v,10,3600);e.target.value=v;typing.duration=v;if(!typing.active){typing.timeLeft=v;updateHUD();}}}
+function init(){try{renderAll();applyTheme();}catch(err){console.error('TypeMaster init render error:',err);toast('Terjadi error render awal, menjalankan mode aman.','error')}setTimeout(()=>{$('#loading-screen').style.opacity=0;setTimeout(()=>{$('#loading-screen').classList.add('hidden');$('#app').classList.remove('hidden')},450)},900); document.addEventListener('click',handleClick);document.addEventListener('input',handleInput);document.addEventListener('change',handleChange);document.addEventListener('keydown',handleKey);window.addEventListener('beforeunload',saveNow);setInterval(()=>{const inc=idleIncome(); if(inc>0){addCoins(inc);$('#notice-footer').textContent='Idle income +' + inc.toFixed(1) + ' coin'; checkAchievements()}$('#coins-footer').textContent=fmt(state.player.coins);$('#income-footer').textContent=idleIncome().toFixed(1);},1000);setInterval(()=>{save();renderHeader()},30000); let seenTutorial=false;try{seenTutorial=localStorage.getItem('typemaster_seen_tutorial')==='1';}catch(e){seenTutorial=!!window.__typemasterSeenTutorial;} if(!seenTutorial){setTimeout(()=>{tutorial();try{localStorage.setItem('typemaster_seen_tutorial','1');}catch(e){window.__typemasterSeenTutorial=true;}},4000)} }
+init();
+})();
+</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a06b8fab4c125d5e',t:'MTc4MDYyNDU5MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
